@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DD57BC41-ECA8-4F60-AC3F-26D0A4373683}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>HoTS_Forecaster_form</RootNamespace>
+    <AssemblyName>HoTS Forecaster form</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Bunifu_UI_v1.4">
+      <HintPath>..\..\..\Е-ЯИИС\Лабы\Лаба 1\MediaPlayerv2\bin\Debug\Bunifu_UI_v1.4.dll</HintPath>
+    </Reference>
+    <Reference Include="HoTS Service">
+      <HintPath>..\bin\Debug\HoTS Service.dll</HintPath>
+    </Reference>
+    <Reference Include="LeftSideTabControl">
+      <HintPath>..\..\..\..\Библиотека\Компоненты\DenByComponents\LeftSideTabControl\LeftSideTabControl\bin\Debug\LeftSideTabControl.dll</HintPath>
+    </Reference>
+    <Reference Include="LeftSideTabControl2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="MetroFramework, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Design, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Fonts, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ZedGraph, Version=1.0.1812.29779, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ZedGraph.5.1.7\lib\net35-Client\ZedGraph.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Form2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form2.Designer.cs">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ExceptionThrower.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\HeroData.cs" />
+    <Compile Include="Model\HeroList.cs" />
+    <Compile Include="Model\Model.cs" />
+    <Compile Include="Model\StatisticModule.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="View\BaseHeroPicker.cs" />
+    <Compile Include="View\ContextMenuComponent.cs" />
+    <Compile Include="View\FilterTab.cs" />
+    <Compile Include="View\ForecastResultComponent.cs" />
+    <Compile Include="View\HeroComponent.cs" />
+    <Compile Include="View\HeroFilter.cs" />
+    <Compile Include="View\HeroSelector.cs" />
+    <Compile Include="View\HeroPicker.cs" />
+    <Compile Include="View\ImageResource.cs" />
+    <Compile Include="View\PlayerPickInfo.cs" />
+    <Compile Include="View\RenderSettings.cs" />
+    <Compile Include="View\StatComponent.cs" />
+    <Compile Include="View\StatGraph.cs" />
+    <Compile Include="View\StatisticViewItem\AverageRaiting.cs" />
+    <Compile Include="View\StatisticViewItem\SpecialistRaiting.cs" />
+    <Compile Include="View\StatisticViewItem\SupportRaiting.cs" />
+    <Compile Include="View\StatisticViewItem\WarriorRaiting.cs" />
+    <Compile Include="View\StatisticViewItem\AssasinRaiting.cs" />
+    <Compile Include="View\StatisticViewItem\EXPStat.cs" />
+    <Compile Include="View\StatisticViewItem\DTPSStat.cs" />
+    <Compile Include="View\StatisticViewItem\SDPSStat.cs" />
+    <Compile Include="View\StatisticViewItem\HPSStat.cs" />
+    <Compile Include="View\StatisticViewItem\DPSStat.cs" />
+    <Compile Include="View\StatisticViewItem\DeathStat.cs" />
+    <Compile Include="View\StatisticViewItem\AssistPerSecStat.cs" />
+    <Compile Include="View\StatisticViewItem\KillPerSecStat.cs" />
+    <Compile Include="View\StatisticViewItem\StatisticViewPainter\ImagePointPainter.cs" />
+    <Compile Include="View\StatisticViewItem\StatisticViewPainter\IPointPainter.cs" />
+    <Compile Include="View\StatisticViewItem\AbstractStatItem.cs" />
+    <Compile Include="View\StatisticViewItem\FrequencyStat.cs" />
+    <Compile Include="View\StatisticViewItem\WinrateStat.cs" />
+    <Compile Include="View\StyleManager.cs" />
+    <Compile Include="View\ThemeSelector.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form2.resx">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="forecast.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LeftSideTabControl2.dll" />
+    <Content Include="License-LGPL.txt" />
+    <None Include="Resources\magnification-lens.png" />
+    <None Include="Resources\close.png" />
+    <None Include="TextSource\Specialist.txt" />
+    <None Include="TextSource\Assassin.txt" />
+    <None Include="TextSource\Warrior.txt" />
+    <None Include="TextSource\Support.txt" />
+    <None Include="Resources\Support1.png" />
+    <None Include="Resources\tileable-classic-nebula-space-patterns-1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Warcraft.png" />
+    <None Include="Resources\The_Lost_Vikings.png" />
+    <None Include="Resources\StarCraft.png" />
+    <None Include="Resources\Overwatch.png" />
+    <None Include="Resources\Diablo.png" />
+    <None Include="Resources\Support.png" />
+    <None Include="Resources\Warrior.png" />
+    <None Include="Resources\Specialist.png" />
+    <None Include="Resources\Assassin.png" />
+    <None Include="Resources\Utility.png" />
+    <None Include="Resources\Tank.png" />
+    <None Include="Resources\Sustained_Damage.png" />
+    <None Include="Resources\Siege.png" />
+    <None Include="Resources\Healer.png" />
+    <None Include="Resources\Burst.png" />
+    <None Include="Resources\Bruisher.png" />
+    <None Include="Resources\Ambusher.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

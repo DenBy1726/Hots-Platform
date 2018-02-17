@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="HoTS_Forecaster_form.Form1" Collapsed="true">
+    <Position X="43" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UUjNDMuT8v4VU5WAYBSNEVkL2YwmnTMiwH6hsZsDBLM=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.Form2" Collapsed="true">
+    <Position X="36" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Form2.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.ExceptionThrower">
+    <Position X="41.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Model\ExceptionThrower.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.HeroData" Collapsed="true">
+    <Position X="36.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAEABAABAAQAgAAAAAAAAAgAAAAAAAAAAAgA=</HashCode>
+      <FileName>Model\HeroData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.HeroList" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="38.25" Y="6.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAggAAAEAAAAAAAEAAAAQAAAAAA=</HashCode>
+      <FileName>Model\HeroList.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="HoTS_Forecaster_form.Model">
+    <Position X="40.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAFCAAABAAAAgAAAAAAAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>Model\Model.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.StatisticModule">
+    <Position X="37" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAACAAAAAAAAgAAAAAAAAAAAAAEAQAAAAAAA=</HashCode>
+      <FileName>Model\StatisticModule.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.Program" Collapsed="true">
+    <Position X="43" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.Properties.Resources" Collapsed="true">
+    <Position X="37.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BKAhAAAAAAgEAAAgAgGBEAgEAQGEAAgBAsgAAAAAQKQ=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.Properties.Settings" Collapsed="true">
+    <Position X="39.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAAAQAAAAIYAAAAABAAAABAAAAAAAIAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.BaseHeroPicker" Collapsed="true">
+    <Position X="47.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BCABAgAAAAEgAAAAYAAAAaAAAAAIAAAAgBAAQAAgAQA=</HashCode>
+      <FileName>View\BaseHeroPicker.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.ContextMenuComponent">
+    <Position X="49" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIEAAACAAAAAAAAgAAAAEAFAAAAAAAAgAAAA=</HashCode>
+      <FileName>View\ContextMenuComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.FilterTab" Collapsed="true">
+    <Position X="47.25" Y="4.75" Width="1.25" />
+    <TypeIdentifier>
+      <HashCode>ABgAgAAAAAAAAAAAAAAAAAAAAAAEAAACAAAAAAAAAAA=</HashCode>
+      <FileName>View\FilterTab.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.ForecastResultComponent" Collapsed="true">
+    <Position X="44.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEgAAABAAAAAAAAAMAAAASEAAAAEQAAIQEAQAgBIAAI=</HashCode>
+      <FileName>View\ForecastResultComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.HeroComponent" Collapsed="true">
+    <Position X="46.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAQAAAAAABAAAAAQAAACAAAAABAAQAAAAEA=</HashCode>
+      <FileName>View\HeroComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.HeroFilter" Collapsed="true">
+    <Position X="47.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAADAQAIgAAgAAAAVCAAAAAAAACAAAAAAAAAAIAAQEA=</HashCode>
+      <FileName>View\HeroFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.HeroPicker" Collapsed="true">
+    <Position X="46.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>View\HeroPicker.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.HeroSelector" Collapsed="true">
+    <Position X="48.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAACAAACgAAAAAAAAAAAAQAAABEAAAAAAAAAEAAAAgA=</HashCode>
+      <FileName>View\HeroSelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.ImageResource" Collapsed="true">
+    <Position X="37.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEgAAAJAAAACABAAgAAAAAAAIAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>View\ImageResource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.PlayerPickInfo">
+    <Position X="51.5" Y="3.75" Width="1.5" />
+    <NestedTypes>
+      <Class Name="HoTS_Forecaster_form.View.PlayerPickInfo.EventPickChangedArgs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>View\PlayerPickInfo.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAABICAAAEIQAAACAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>View\PlayerPickInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.RenderSettings" Collapsed="true">
+    <Position X="36" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAEAAAABCAEGBBAAgAAAAAgIAAAACAAEAAAA=</HashCode>
+      <FileName>View\RenderSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StatComponent" Collapsed="true">
+    <Position X="40.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQgAAAEIAAABAIAAMFCAAGBQEABAABAAKAAAAAgA=</HashCode>
+      <FileName>View\StatComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StatGraph">
+    <Position X="34" Y="4.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABCAAAAABAAAAAAAAAAAAAAAAAIAAAAAIACAAAAAAA=</HashCode>
+      <FileName>View\StatGraph.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StyleManager" Collapsed="true">
+    <Position X="37.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAgAABAEAAAQAAAQACgkAAAEACAABRAAAQAAAAE=</HashCode>
+      <FileName>View\StyleManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.ThemeSelector" Collapsed="true">
+    <Position X="39.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABBAAABAAQAAAAAAAAAEAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>View\ThemeSelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StatisticViewItem.AbstractStatItem&lt;T&gt;">
+    <Position X="5.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAEAgBgAAAQAgAAEAAAIAQAAAAAAAAAAABgAAAAYAI=</HashCode>
+      <FileName>View\StatisticViewItem\AbstractStatItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StatisticViewItem.AverageRaiting">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAACQAAIAAgAAAAAAAAQAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>View\StatisticViewItem\AverageRaiting.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StatisticViewItem.DeathStat" Collapsed="true">
+    <Position X="8" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAQAAIAAgAAAAAAAAQAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>View\StatisticViewItem\DeathStat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StatisticViewItem.KillPerSecStat" Collapsed="true">
+    <Position X="6.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAQAAIAAgAAAAAAAAQAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>View\StatisticViewItem\KillPerSecStat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HoTS_Forecaster_form.View.StatisticViewItem.StatisticViewPainter.ImagePointPainter" BaseTypeListCollapsed="true">
+    <Position X="3.75" Y="6.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAgBAAAAAACAAEAAAABIAAABgAAAAYAA=</HashCode>
+      <FileName>View\StatisticViewItem\StatisticViewPainter\ImagePointPainter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="HoTS_Forecaster_form.View.StatisticViewItem.StatisticViewPainter.IPointPainter">
+    <Position X="3.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAACAAAAAAAAIAAAAAAAAAYAA=</HashCode>
+      <FileName>View\StatisticViewItem\StatisticViewPainter\IPointPainter.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
