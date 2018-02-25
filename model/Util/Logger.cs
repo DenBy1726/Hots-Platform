@@ -10,7 +10,7 @@ namespace HoTS_Service.Util
     {
         public static void log(string type, string message)
         {
-
+            
             type = type.ToUpper();
             switch (type)
             {

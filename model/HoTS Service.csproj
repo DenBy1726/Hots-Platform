@@ -74,5 +74,8 @@
     <Compile Include="Util\Logger.cs" />
     <Compile Include="Util\ToString.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

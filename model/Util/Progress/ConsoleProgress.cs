@@ -17,6 +17,17 @@ namespace HoTS_Service.Util
         /// <param name="total">The amount it counts</param>
         public static void drawTextProgressBar(int progress, int total)
         {
+            drawTextProgressBar((long)progress, (long)total);
+        }
+
+        /// <summary>
+        /// Draw a progress bar at the current cursor position.
+        /// Be careful not to Console.WriteLine or anything whilst using this to show progress!
+        /// </summary>
+        /// <param name="progress">The position of the bar</param>
+        /// <param name="total">The amount it counts</param>
+        public static void drawTextProgressBar(long progress, long total)
+        {
             //draw empty progress bar
             Console.CursorLeft = 0;
             Console.Write("["); //start
@@ -45,7 +56,10 @@ namespace HoTS_Service.Util
             //draw totals
             Console.CursorLeft = 35;
             Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write(progress.ToString() + " of " + total.ToString() + "    "); //blanks at the end remove any excess
+            double percent = Math.Round((double)progress / (double)total * 100.0, 2);
+            Console.Write(percent + " % " + " ( " +
+                progress.ToString() + " of " + total.ToString() + " )   ");
+            //blanks at the end remove any excess
         }
     }
 }

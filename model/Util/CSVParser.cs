@@ -27,7 +27,7 @@ namespace Parser
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public IDisposable Load(string file)
+        public CSVParser Load(string file)
         {
             stream = new System.IO.StreamReader(file,Encoding.UTF8);
             return this;
