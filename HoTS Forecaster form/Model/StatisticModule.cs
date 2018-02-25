@@ -12,12 +12,12 @@ namespace HoTS_Forecaster_form
         public MatchupService MatchUp = new MatchupService();
         public StatisticModule()
         {
-            Validate("./Data/Statistic.json");
-            Validate("./Data/Statistic_sho.json");
-            Validate("./Data/MatchupTable.json");
+            Validate("./Source/Replay/Statistic.json");
+            Validate("./Source/Replay/Statistic_sho.json");
+            Validate("./Source/Replay/MatchupTable.json");
             try
             {
-                Statistic.Load("./Data/Statistic.json");
+                Statistic.Load("./Source/Replay/Statistic.json");
             }
             catch (Exception e)
             {
@@ -25,7 +25,7 @@ namespace HoTS_Forecaster_form
             }
             try
             {
-                HeroStatistic.Load("./Data/Statistic_sho.json");
+                HeroStatistic.Load("./Source/Replay/Statistic_sho.json");
             }
             catch (Exception e)
             {
@@ -33,7 +33,7 @@ namespace HoTS_Forecaster_form
             }
             try
             {
-                MatchUp.Load("./Data/MatchupTable.json");
+                MatchUp.Load("./Source/Replay/MatchupTable.json");
             }
             catch (Exception e)
             {

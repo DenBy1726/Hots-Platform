@@ -36,13 +36,13 @@ namespace HoTS_Forecaster_form
 
         public Model()
         {
-            Validate("./Data/Hero.json");
-            Validate("./Data/HeroDetails.json");
-            Validate("./Data/Map.json");
+            Validate("./Source/Hero/Hero.json");
+            Validate("./Source/Hero/HeroDetails.json");
+            Validate("./Source/Map/Map.json");
 
             try
             {
-                hero.Load("./Data/Hero.json");
+                hero.Load("./Source/Hero/Hero.json");
             }
             catch(Exception e)
             {
@@ -50,7 +50,7 @@ namespace HoTS_Forecaster_form
             }
             try
             {
-                Map.Load("./Data/Map.json");
+                Map.Load("./Source/Map/Map.json");
             }
             catch (Exception e)
             {
@@ -58,7 +58,7 @@ namespace HoTS_Forecaster_form
             }
             try
             {
-                detail.Load("./Data/HeroDetails.json");
+                detail.Load("./Source/Hero/HeroDetails.json");
             }
             catch (Exception e)
             {

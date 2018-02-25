@@ -65,12 +65,12 @@ namespace OnlineParser
 
             if (!Directory.Exists("Cache"))
                 Directory.CreateDirectory("Cache");
-            if (!Directory.Exists("Images"))
-                Directory.CreateDirectory("Images");
-            if (!Directory.Exists("Icons"))
-                Directory.CreateDirectory("Icons");
-            if (!Directory.Exists("Hero"))
-                Directory.CreateDirectory("Hero");
+            if (!Directory.Exists("./Source/Images"))
+                Directory.CreateDirectory("./Source/Images");
+            if (!Directory.Exists("./Source/Icons"))
+                Directory.CreateDirectory("./Source/Icons");
+            if (!Directory.Exists("./Source/Hero"))
+                Directory.CreateDirectory("./Source/Hero");
 
             log("debug", "WEB Парсер запущен");
             if (!File.Exists("./Source/Hero/Hero.json"))
@@ -86,6 +86,7 @@ namespace OnlineParser
                 {
                     temp = i;
                     var Hero = Heroes.Find(i);
+                    var path = HeroTemplateURL + Hero.Name;
 
                     Caching(HeroTemplateURL + Hero.Name, $"./Cache/{Hero.Name}.html");
 
@@ -97,15 +98,14 @@ namespace OnlineParser
 
                     log("debug", "Парсинг " + Hero.Name + " начат");
                     Details[i] = ParseDetails(HTML);
+                    Details[i].DetailsUrl = path;
+
                     log("info", Details[i].ToString());
                     log("succes", "Парсинг " + Hero.Name + " завершен");
 
                 }
 
-                log("succes", "Парсинг деталей героев завершен");
-
-                var outputDetails = JSonParser.Save(Details, typeof(HeroDetails[]));
-                File.WriteAllText("Hero/HeroDetails.json", outputDetails);
+             
 
             }
 
@@ -129,6 +129,7 @@ namespace OnlineParser
             {
                 var Hero = Heroes.Find(i);
 
+
                 Caching(ImageTemplateURL + Hero.Name, $"./Cache/{Hero.Name}_Large.html");
 
                 log("debug", $"Чтение {Hero.Name}_Large");
@@ -141,6 +142,11 @@ namespace OnlineParser
             }
 
             log("succes", "Парсинг изображений завершен");
+
+            log("succes", "Парсинг деталей героев завершен");
+
+            var outputDetails = JSonParser.Save(Details, typeof(HeroDetails[]));
+            File.WriteAllText("./Source/Hero/HeroDetails.json", outputDetails);
 
 
         }
@@ -297,9 +303,17 @@ namespace OnlineParser
                 var element = iconData.FirstChild.FirstChild;
                 var alt = element.Attributes["alt"];
                 var src = element.Attributes["src"];
-                Caching(src, $"./Icons/{alt}.png");
 
-                Bitmap img = new Bitmap(new Bitmap($"./Icons/{alt}.png"), new Size(40, 40));
+                var finder = Heroes.Where(x => x.Name == alt);
+                if (finder.Count > 0)
+                {
+                    Details[finder[0].Id].IconUrl = src;
+                }
+
+
+                Caching(src, $"./Source/Icons/{alt}.png");
+
+                Bitmap img = new Bitmap(new Bitmap($"./Source/Icons/{alt}.png"), new Size(40, 40));
                 
 
                 Bitmap imgWithFrame = new Bitmap(img);
@@ -309,16 +323,9 @@ namespace OnlineParser
                     g.DrawRectangle(new Pen(Brushes.Gold, 2), new Rectangle(0, 0, img.Width, img.Height));
                 }
 
-                imgWithFrame.Save($"./Icons/{alt}_h.png");
+                imgWithFrame.Save($"./Source/Icons/{alt}_h.png");
 
                 Image corner = OvalImage(img,Color.Transparent);
-
-                /* using (Graphics g = Graphics.FromImage(corner))
-                 {
-                     var pen = new Pen(new SolidBrush(Color.Black), 1);
-                     pen.Color = Color.FromArgb(150, Color.Black.R, Color.Black.G, Color.Black.B);
-                     DrawCirlceFrame(corner, g, pen, 2);
-                 }*/
 
                 Bitmap rez = new Bitmap(50, 50);
                 using (Graphics g = Graphics.FromImage(rez))
@@ -326,7 +333,7 @@ namespace OnlineParser
                     g.DrawImage(corner, new Rectangle(5, 5, 40, 40), new Rectangle(0, 0, 40, 40), GraphicsUnit.Pixel);
                 }
 
-                rez.Save($"./Icons/{alt}_corner.png");
+                rez.Save($"./Source/Icons/{alt}_corner.png");
 
                 using (Graphics g = Graphics.FromImage(rez))
                 {
@@ -341,7 +348,7 @@ namespace OnlineParser
 
                 }
 
-                rez.Save($"./Icons/{alt}_corner_h.png");
+                rez.Save($"./Source/Icons/{alt}_corner_h.png");
 
             }
         }
@@ -349,12 +356,16 @@ namespace OnlineParser
         public static void ParseImages(string HTML,string heroName)
         {
             CQ cq = CQ.Create(HTML);
-
             var cq2 = cq.Find(Selectors.GetImageSelector());
-
             var src = cq2[0].Attributes["src"];
 
-            Caching(src, $"./Images/{heroName}.png");
+            var finder = Heroes.Where(x => x.Name == heroName);
+            if (finder.Count > 0)
+            {
+                Details[finder[0].Id].ImageUrl = src;
+            }
+
+            Caching(src, $"./Source/Images/{heroName}.png");
 
         }
 

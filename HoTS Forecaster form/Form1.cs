@@ -71,12 +71,12 @@ namespace HoTS_Forecaster_form
 
             imageResource = new ImageResource(this.imageList1)
             {
-                Resource = "Resource/Icons/"
+                Resource = "Source/Icons/"
             };
             imageResource.ImageSizeChange(Settings.Default.IconSize);
             largeImageResource = new ImageResource(this.imageList2)
             {
-                Resource = "Resource/Images/"
+                Resource = "Source/Images/"
             };
             largeImageResource.Load(largeImageResource.Resource);
 
