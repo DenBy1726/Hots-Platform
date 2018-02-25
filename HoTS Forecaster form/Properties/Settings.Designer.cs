@@ -73,7 +73,7 @@ namespace HoTS_Forecaster_form.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("corner")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string RenderType {
             get {
                 return ((string)(this["RenderType"]));

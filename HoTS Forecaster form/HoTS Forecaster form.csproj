@@ -34,26 +34,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bunifu_UI_v1.4">
-      <HintPath>..\..\..\Е-ЯИИС\Лабы\Лаба 1\MediaPlayerv2\bin\Debug\Bunifu_UI_v1.4.dll</HintPath>
+      <HintPath>..\..\..\..\..\Библиотека\Компоненты\Bunifu_UI_v1.4.dll</HintPath>
     </Reference>
     <Reference Include="HoTS Service">
-      <HintPath>..\bin\Debug\HoTS Service.dll</HintPath>
+      <HintPath>..\model\Release\HoTS Service.dll</HintPath>
     </Reference>
     <Reference Include="LeftSideTabControl">
-      <HintPath>..\..\..\..\Библиотека\Компоненты\DenByComponents\LeftSideTabControl\LeftSideTabControl\bin\Debug\LeftSideTabControl.dll</HintPath>
+      <HintPath>..\..\..\..\..\Библиотека\Компоненты\DenByComponents\LeftSideTabControl\LeftSideTabControl\bin\Debug\LeftSideTabControl.dll</HintPath>
     </Reference>
-    <Reference Include="LeftSideTabControl2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="MetroFramework, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.dll</HintPath>
+    <Reference Include="MetroFramework">
+      <HintPath>..\..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.dll</HintPath>
     </Reference>
-    <Reference Include="MetroFramework.Design, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.Design.dll</HintPath>
+    <Reference Include="MetroFramework.Design">
+      <HintPath>..\..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.Design.dll</HintPath>
     </Reference>
-    <Reference Include="MetroFramework.Fonts, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.Fonts.dll</HintPath>
+    <Reference Include="MetroFramework.Fonts">
+      <HintPath>..\..\..\..\..\Библиотека\Компоненты\MetroFramework\net\MetroFramework.Fonts.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

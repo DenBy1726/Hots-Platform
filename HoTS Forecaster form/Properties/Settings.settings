@@ -15,7 +15,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="RenderType" Type="System.String" Scope="User">
-      <Value Profile="(Default)">corner</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IconSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">50</Value>

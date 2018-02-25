@@ -256,6 +256,7 @@
             this.отменаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.metroStyleManager1 = new MetroFramework.Components.MetroStyleManager(this.components);
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
+            this.htmlToolTip1 = new MetroFramework.Drawing.Html.HtmlToolTip();
             this.metroTabControl1.SuspendLayout();
             this.metroTabPage4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -309,7 +310,7 @@
             this.metroTabControl1.Location = new System.Drawing.Point(5, 30);
             this.metroTabControl1.Multiline = true;
             this.metroTabControl1.Name = "metroTabControl1";
-            this.metroTabControl1.SelectedIndex = 0;
+            this.metroTabControl1.SelectedIndex = 1;
             this.metroTabControl1.Size = new System.Drawing.Size(776, 662);
             this.metroTabControl1.Style = MetroFramework.MetroColorStyle.Purple;
             this.metroTabControl1.TabIndex = 6;
@@ -4074,6 +4075,10 @@
             this.imageList2.ImageSize = new System.Drawing.Size(200, 200);
             this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // htmlToolTip1
+            // 
+            this.htmlToolTip1.OwnerDraw = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -4363,6 +4368,7 @@
         private MetroFramework.Controls.MetroCheckBox metroCheckBox37;
         private MetroFramework.Controls.MetroCheckBox metroCheckBox38;
         private MetroFramework.Controls.MetroCheckBox metroCheckBox39;
+        private MetroFramework.Drawing.Html.HtmlToolTip htmlToolTip1;
     }
 }
 

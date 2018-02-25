@@ -15,11 +15,13 @@ namespace Parser
 
         static void Main(string[] args)
         {
+            if (args.Length == 0)
+                args = SetArgsByDefault();
+
             Program.args = args;
 
-            //dynamic obj = HoTS_Service.Util.JSONParser.Load(@"E:\Кабинет\Курс 4\Курсач\Source Dataset\Mapper\HeroAlias\Alias.json");
-
-            if (args.Length > 0 && args[0].ToLower() == "help")
+           
+            if (Program.args.Length > 0 && args[0].ToLower() == "help")
             {
                 Console.WriteLine("Модули:");
                 Console.WriteLine("parsehero:\t загружает информацию о героях");
@@ -30,8 +32,6 @@ namespace Parser
             }
 
 
-            //    try
-            //    {
             switch (args[0].ToLower())
             {
                 case "parsehero":
@@ -80,13 +80,18 @@ namespace Parser
                     break;
             }
         }
-        // catch (Exception e)
-        //  {
-        //    //   Console.WriteLine(e.Message);
-        //   }
 
+        private static string[] SetArgsByDefault()
+        {
+            Program.args = new string[]
+            {
+                @"autoparser",
+                @"i=.\Input",
+                @"o=.\Source"
+            };
+            return args;
+        }
 
-        // }
 
         public static void SaveTOExcelCSVFormat()
         {

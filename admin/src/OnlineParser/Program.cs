@@ -62,8 +62,19 @@ namespace OnlineParser
         {
             string HTML ="";
 
+            if (!Directory.Exists("Cache"))
+                Directory.CreateDirectory("Cache");
+            if (!Directory.Exists("Images"))
+                Directory.CreateDirectory("Images");
+            if (!Directory.Exists("Icons"))
+                Directory.CreateDirectory("Icons");
+            if (!Directory.Exists("Hero"))
+                Directory.CreateDirectory("Hero");
+
             log("debug", "WEB Парсер запущен");
-            Heroes.Load("./Input/Hero.json");
+            if (!File.Exists("./Source/Hero/Hero.json"))
+                log("error", "Не найден исходный файл схемы героев по пути ./Source/Hero/Hero.json");
+            Heroes.Load("./Source/Hero/Hero.json");
             if (USE_HERO_DETAILS)
             {
                 Details = new HeroDetails[Heroes.Count()];

@@ -231,8 +231,6 @@ namespace Parser.Service
                 log("debug", "Инициализация парсера героев начата");
                 CSVParser.Load(path);
                 log("succes", "Инициализация парсера героев завершена");
-
-
             }
 
             protected override Hero ParseData(object obj)
@@ -407,15 +405,6 @@ namespace Parser.Service
                 AvgStat = new HeroStatisticItemAvg[HParser.Hero.Count];
                 MinStat = new HeroStatisticItemMin[HParser.Hero.Count];
                 MaxStat = new HeroStatisticItemMax[HParser.Hero.Count];
-
-                //для юнит тестов
-                if (MParser == null)
-                {
-                    MParser = new MapParser("", "")
-                    {
-                        Map = Enumerable.Repeat<Map>(null, 1000).ToList()
-                    };
-                }
 
                 Stat = new Statistic[1000];
             }
@@ -1583,15 +1572,13 @@ namespace Parser.Service
             log("succes", "Парсинг карт завершен");
 
             //считываем данные схемы повторов, сохраняем в память
-            if (KeysParam.useOlderData == false)
+            if (ExistAll(Output[2],Output[3], Output[5])== false)
             {
                 log("debug", "Парсинг повторов начат");
                 RSParser = new ReplaySchemaParser(Input[2], Input.InputFolder + Input.Path[3],
                     Input.Name[3], Output[2], Output[3], Output[5]);
                 RSParser.Run();
                 log("succes", "Парсинг повторов завершен");
-                log("info", "Используйте ключ -olds чтобы при будущих запусках пропускать " +
-                    "этот этап если данные не изменились");
             }
             else
             {
@@ -1623,20 +1610,28 @@ namespace Parser.Service
 
             //создаем конечную модель
             log("debug", "Формирование данных для модели начато");
-            MDParser = new ModelParser(Output[2], Output[6],Output[11]);
-            MDParser.Run();
+            if (ExistAll(Output[6], Output[11]) == false)
+            {
+                MDParser = new ModelParser(Output[2], Output[6], Output[11]);
+                MDParser.Run();
+            }
+            else
+            {
+                log("info", "Найдены старые данные для модели. " +
+                    "Процесс формирования данных для модели прекоащен.");
+            }
             log("succes", "Формирование данных для модели завершено");
-         
-            Console.ReadKey();
-            Console.ReadKey();
         }
 
+        private bool ExistAll(params string[] files)
+        {
+            return files.All(x => File.Exists(x));
+        }
 
         public override void Validate()
         {
             if (NamedParam.ContainsKey("i") == false)
             {
-                log("Error", "asaf");
                 throw new Exception("Не инициализирован обязательный параметр i." +
                     " Укажите входным параметром папку,в которой содержатся исходные файлы." +
                     "Пример: i=\"D:\\temp\\\"");

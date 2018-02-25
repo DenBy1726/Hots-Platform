@@ -21,7 +21,10 @@ namespace HoTS_Forecaster_form.View
         string resource;
 
         public HashSet<string> RenderType { get => renderType;}
-        public string Resource { get => resource; set => resource = value; }
+        public string Resource {
+            get => resource;
+            set => resource = value;
+        }
 
         public ImageResource(ImageList imageList)
         {
