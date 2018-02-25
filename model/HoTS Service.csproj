@@ -65,10 +65,13 @@
     <Compile Include="Service\MatchupService.cs" />
     <Compile Include="Service\NeuralNetoworkForecast.cs" />
     <Compile Include="Service\StatisticService.cs" />
+    <Compile Include="Util\Progress\AnimatedBar.cs" />
+    <Compile Include="Util\Progress\ConsoleProgress.cs" />
     <Compile Include="Util\CSVBatchParser.cs" />
     <Compile Include="Util\CSVParser.cs" />
     <Compile Include="Util\Extension\StringExtension.cs" />
     <Compile Include="Util\JSONParser.cs" />
+    <Compile Include="Util\Logger.cs" />
     <Compile Include="Util\ToString.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,6 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HoTS_Service.Util.Logger;
+using static HoTS_Service.Util.ConsoleProgress;
+
 
 namespace Parser.Service
 {
@@ -1694,95 +1697,10 @@ namespace Parser.Service
            
         }
 
-        public static void log(string type, string message)
-        {
-            
-            type = type.ToUpper();
-            switch (type)
-            {
-                case "ERROR":
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case "WARNG":
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    break;
-                case "SUCCES":
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    break;
-                case "INFO":
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    break;
-                case "PRGRS":
-                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                    break;
-                default:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
-            
-            Console.WriteLine("{1,6} {0} {2}", DateTime.Now.ToString("hh:mm:ss"),type,message);
-        }
+       
 
-        /// <summary>
-        /// Draw a progress bar at the current cursor position.
-        /// Be careful not to Console.WriteLine or anything whilst using this to show progress!
-        /// </summary>
-        /// <param name="progress">The position of the bar</param>
-        /// <param name="total">The amount it counts</param>
-        private static void drawTextProgressBar(int progress, int total)
-        {
-            //draw empty progress bar
-            Console.CursorLeft = 0;
-            Console.Write("["); //start
-            Console.CursorLeft = 32;
-            Console.Write("]"); //end
-            Console.CursorLeft = 1;
-            float onechunk = 30.0f / total;
 
-            //draw filled part
-            int position = 1;
-            for (int i = 0; i < onechunk * progress; i++)
-            {
-                Console.BackgroundColor = ConsoleColor.Gray;
-                Console.CursorLeft = position++;
-                Console.Write(" ");
-            }
-
-            //draw unfilled part
-            for (int i = position; i <= 31; i++)
-            {
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.CursorLeft = position++;
-                Console.Write(" ");
-            }
-
-            //draw totals
-            Console.CursorLeft = 35;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write(progress.ToString() + " of " + total.ToString() + "    "); //blanks at the end remove any excess
-        }
-
-        class AnimatedBar
-        {
-            List<string> animation;
-            int counter;
-            public AnimatedBar()
-            {
-                this.animation = new List<string> { "/", "-", @"\", "|" };
-                this.counter = 0;
-            }
-
-            /// <summary>
-            /// prints the character found in the animation according to the current index
-            /// </summary>
-            public void Step(int value)
-            {
-                Console.Write(this.animation[this.counter] +" " + value + "\r");
-                this.counter++;
-                if (this.counter == this.animation.Count)
-                    this.counter = 0;
-            }
-        }
+      
     }
  
 }
