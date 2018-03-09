@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserTest", "ParserTest\Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downloader", "admin\src\Downloader\Downloader.csproj", "{35086165-BA33-4811-957C-E02782A5203D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Classifier", "admin\src\Classifier\Classifier.csproj", "{D34C7B74-CBCE-4CBF-8E63-E55EBDE917EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{35086165-BA33-4811-957C-E02782A5203D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35086165-BA33-4811-957C-E02782A5203D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35086165-BA33-4811-957C-E02782A5203D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D34C7B74-CBCE-4CBF-8E63-E55EBDE917EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D34C7B74-CBCE-4CBF-8E63-E55EBDE917EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D34C7B74-CBCE-4CBF-8E63-E55EBDE917EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D34C7B74-CBCE-4CBF-8E63-E55EBDE917EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,5 +83,6 @@ Global
 		{DD57BC41-ECA8-4F60-AC3F-26D0A4373683} = {77D0F97B-7CA8-4F5B-A05B-21FD11F5B03A}
 		{0FAC76C1-B61A-42D9-B1E8-19E9B0E47F35} = {722B7F92-3D6D-46D5-B00D-6E6D516FA850}
 		{35086165-BA33-4811-957C-E02782A5203D} = {69007840-FA23-473D-A3D7-A2AACF8BCA2A}
+		{D34C7B74-CBCE-4CBF-8E63-E55EBDE917EE} = {69007840-FA23-473D-A3D7-A2AACF8BCA2A}
 	EndGlobalSection
 EndGlobal

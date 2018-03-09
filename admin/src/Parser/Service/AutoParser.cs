@@ -10,7 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using static HoTS_Service.Util.Logger;
 using static HoTS_Service.Util.ConsoleProgress;
-
+using HoTS_Service.Service;
+using Accord.MachineLearning;
 
 namespace Parser.Service
 {
@@ -31,7 +32,7 @@ namespace Parser.Service
                 Validate();
             }
 
-            public string InputFolder { get => inputFolder;}
+            public string InputFolder { get => inputFolder; }
 
             void Validate()
             {
@@ -102,7 +103,7 @@ namespace Parser.Service
         public class OutputFileParam
         {
             string outputFolder;
-            
+
             public OutputFileParam(string output)
             {
                 OutputFolder = output;
@@ -118,7 +119,7 @@ namespace Parser.Service
                         Directory.CreateDirectory(OutputFolder + Path[i]);
                         log("debug", $"Выходной каталог { OutputFolder + Path[i]} найден");
                     }
-                   
+
                 }
             }
 
@@ -130,12 +131,14 @@ namespace Parser.Service
                 "\\Replay\\",
                 "\\Replay\\",
                 "\\Replay\\",
-                "\\",
+                "\\Model\\",
                 "\\Hero\\",
                 "\\Map\\",
                 "\\Replay\\",
                 "\\Replay\\",
-                "\\Replay\\"
+                "\\Replay\\",
+                "\\Hero\\",
+                "\\Model\\"
             };
 
             string[] name = new string[]
@@ -146,13 +149,15 @@ namespace Parser.Service
                 "Statistic_temp.json",
                 "Statistic_o.csv",
                 "Statistic_sho_temp.json",
-                "NNData2.csv",
+                "NNData.csv",
                 "Hero.json",
                 "Map.json",
                 "Statistic_sho.json",
                 "Statistic.json",
-                "MatchupTable.json"
-                
+                "MatchupTable.json",
+                "HeroClusters.json",
+                "NNDataGauss.csv"
+
             };
 
             public string this[int i]
@@ -190,7 +195,7 @@ namespace Parser.Service
             public int GroupCount = Enum.GetValues(typeof(HeroGroup)).Length;
             public int SubGroupCount = Enum.GetValues(typeof(HeroSubGroup)).Length;
 
-            public HeroParser(string input,string output)
+            public HeroParser(string input, string output)
             {
                 Input = input;
                 Output = output;
@@ -208,11 +213,11 @@ namespace Parser.Service
                     Hero h = ParseData(data);
                     if (h == null)
                     {
-                        log("debug", $"Строка {i+1}");
+                        log("debug", $"Строка {i + 1}");
                         continue;
                     }
                     Hero.Add(h);
-                    log("info",h.ToString());
+                    log("info", h.ToString());
                     i++;
                 }
 
@@ -222,11 +227,11 @@ namespace Parser.Service
                 Save(Output, Hero, Hero.GetType());
                 log("succes", "Сохранение данных о героях завершено");
             }
-            
+
 
             public override void Validate()
             {
-                
+
             }
 
             protected override void OpenSource(string path)
@@ -291,18 +296,18 @@ namespace Parser.Service
             }
         }
 
-        public class MapParser :CLIParser<Map>
+        public class MapParser : CLIParser<Map>
         {
             public string Input, Output;
             public List<Map> Map = new List<Map>();
 
-            public MapParser(string input,string output)
+            public MapParser(string input, string output)
             {
                 Input = input;
                 Output = output;
             }
 
-            
+
             public void Run()
             {
                 OpenSource(Input);
@@ -315,7 +320,7 @@ namespace Parser.Service
                     if (h == null)
                         continue;
                     Map.Add(h);
-                    log("info",h.ToString());
+                    log("info", h.ToString());
                 }
 
                 CSVParser.Dispose();
@@ -325,7 +330,7 @@ namespace Parser.Service
 
             public override void Validate()
             {
-                
+
             }
 
             protected override void OpenSource(string path)
@@ -349,7 +354,7 @@ namespace Parser.Service
                 int id = Int32.Parse(data[0]);
                 if (id > 1000)
                 {
-                    log("warng", $"Приведение абсолютного ИД к относительному {id} -> {id%1000}");
+                    log("warng", $"Приведение абсолютного ИД к относительному {id} -> {id % 1000}");
                     id = id % 1000;
                 }
                 string name = data[1];
@@ -369,9 +374,9 @@ namespace Parser.Service
             }
         }
 
-        public class ReplaySchemaParser: CLIParser<ReplaySchema>
+        public class ReplaySchemaParser : CLIParser<ReplaySchema>
         {
-            public string InputSchema,InputData,Output,Extension,StatisticOutput,
+            public string InputSchema, InputData, Output, Extension, StatisticOutput,
                 StatisticHeroOutput;
             ///размер пакета для сохранения в файл.
             public int BatchCount;
@@ -382,11 +387,11 @@ namespace Parser.Service
             public HeroStatisticItemAvg[] AvgStat;
             public HeroStatisticItemMin[] MinStat;
             public HeroStatisticItemMax[] MaxStat;
-            
+
 
             public ReplaySchemaParser(string inputSchema, string inputData,
-                string extension,string output,string statisticOutput, string statisticHeroOutput,
-                int batchCount = 10000 )
+                string extension, string output, string statisticOutput, string statisticHeroOutput,
+                int batchCount = 10000)
             {
                 InputSchema = inputSchema;
                 InputData = inputData;
@@ -424,7 +429,7 @@ namespace Parser.Service
                 log("succes", "Инициализация статистики героев завершена");
 
                 OpenSource(InputSchema);
-                OpenBatchSource(InputData,Extension);
+                OpenBatchSource(InputData, Extension);
                 AnimatedBar bar = new AnimatedBar();
 
                 for (int j = 0; j < Stat.Length; j++)
@@ -513,7 +518,7 @@ namespace Parser.Service
                         {
                             UpdateHeroStat(AvgStat, MinStat, MaxStat, replayData[j]);
                         }
-                        for (int j=0;j<m.YourTeam.Length;j++)
+                        for (int j = 0; j < m.YourTeam.Length; j++)
                         {
                             Stat[r.mapId].Statictic.Matches[m.YourTeam[j]]++;
                             Stat[r.mapId].Statictic.Wins[m.YourTeam[j]]++;
@@ -530,16 +535,16 @@ namespace Parser.Service
                             bar.Step(parsed);
                         }
 
-                        
 
-                        if(batch.Count == BatchCount)
+
+                        if (batch.Count == BatchCount)
                         {
                             Save(Output, batch, typeof(List<Match>));
                             batch.Clear();
                         }
                     }
                     i++;
-                    
+
                 }
                 //если остались не сохраненные данные
                 if (batch.Count > 0)
@@ -551,11 +556,11 @@ namespace Parser.Service
                 ComputeAverage(AvgStat);
 
                 Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[], HeroStatisticItemMax[]>
-                    heroStat = new Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[], 
+                    heroStat = new Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[],
                     HeroStatisticItemMax[]>(AvgStat, MinStat, MaxStat);
 
-                File.WriteAllText(StatisticHeroOutput, JSonParser.Save(heroStat, 
-                    typeof(Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[], 
+                File.WriteAllText(StatisticHeroOutput, JSonParser.Save(heroStat,
+                    typeof(Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[],
                     HeroStatisticItemMax[]>)), Encoding.Default);
 
                 File.WriteAllText(StatisticOutput, JSonParser.Save(Stat, typeof(Statistic[])), Encoding.Default);
@@ -629,10 +634,10 @@ namespace Parser.Service
                 log("succes", "Инициализация парсера схемы повторов завершена");
             }
 
-            protected void OpenBatchSource(string path,string ext)
+            protected void OpenBatchSource(string path, string ext)
             {
                 log("debug", "Инициализация парсера схемы повторов начата");
-                
+
                 CSVBParser.Load(Directory.GetFiles(path, ext));
                 log("succes", "Инициализация парсера схемы повторов завершена");
             }
@@ -656,7 +661,7 @@ namespace Parser.Service
                         sch.mapId = sch.mapId % 1000;
                     var dt = DateTime.Parse(data[3]);
                     sch.length = dt.Second + dt.Minute * 60;
-                    bool parse = Enum.TryParse(data[1],out sch.gameMode);
+                    bool parse = Enum.TryParse(data[1], out sch.gameMode);
                     sch.gameMode -= 2;
                     if (parse == false || (int)sch.gameMode >= GameModeCount)
                     {
@@ -671,7 +676,7 @@ namespace Parser.Service
                     log("warng", "Неверный формат строки схемы повтора");
                     return null;
                 }
-                
+
             }
 
             protected HeroStatisticItem ParseReplayData(object obj)
@@ -958,7 +963,7 @@ namespace Parser.Service
             {
                 List<Match> m = obj as List<Match>;
                 int ind = 0;
-                using (var f = File.Open(name,FileMode.Append))
+                using (var f = File.Open(name, FileMode.Append))
                 {
                     using (var file = new StreamWriter(f))
                     {
@@ -982,21 +987,21 @@ namespace Parser.Service
                         }
                     }
                 }
-                
+
             }
         }
 
         public class DeleterParser : CLIParser<object>
         {
-            public string HeroInput, MapInput,HeroStatisticInput, MapStatisticInput;
+            public string HeroInput, MapInput, HeroStatisticInput, MapStatisticInput;
             public string HeroOutput, MapOutput, HeroStatisticOutput, MapStatisticOutput;
 
             public Dictionary<int, int> HeroMapper = new Dictionary<int, int>();
             public Dictionary<int, int> MapMapper = new Dictionary<int, int>();
 
-            public DeleterParser(string hero,string map,string mapStatistic,
-                string heroStatistic,string heroOutput,string mapOutput,
-                string heroStatisticOutput,string mapStatisticOutput)
+            public DeleterParser(string hero, string map, string mapStatistic,
+                string heroStatistic, string heroOutput, string mapOutput,
+                string heroStatisticOutput, string mapStatisticOutput)
             {
                 HeroInput = hero;
                 MapInput = map;
@@ -1009,7 +1014,7 @@ namespace Parser.Service
                 MapStatisticOutput = mapStatisticOutput;
             }
 
-      
+
 
             public void Run()
             {
@@ -1034,9 +1039,9 @@ namespace Parser.Service
                 IndexateMap(tempRSStat);
 
                 log("debug", "Индексация статистики");
-                for (int i=0;i< tempRSStat.Count;i++)
+                for (int i = 0; i < tempRSStat.Count; i++)
                 {
-                    tempRSStat[i].Statictic.Matches = 
+                    tempRSStat[i].Statictic.Matches =
                         tempRSStat[i].Statictic.Matches.ToList().Where((x) => x != 0)
                         .ToArray();
                     tempRSStat[i].Statictic.Wins =
@@ -1068,7 +1073,7 @@ namespace Parser.Service
             {
                 for (int i = 0; i < tempRSStat.Count; i++)
                 {
-                    MapMapper[MParser.Map[i].Id-1] = i;
+                    MapMapper[MParser.Map[i].Id - 1] = i;
                     MParser.Map[i] = new Map(i, MParser.Map[i].Name);
                 }
             }
@@ -1105,7 +1110,7 @@ namespace Parser.Service
             /// <param name="tempHeroMin">минимум</param>
             /// <param name="tempHeroMax">максимум</param>
             protected void IndexateHeroes(List<HeroStatisticItemAvg> tempHeroAvg,
-                List<HeroStatisticItemMin> tempHeroMin, List<HeroStatisticItemMax> 
+                List<HeroStatisticItemMin> tempHeroMin, List<HeroStatisticItemMax>
                 tempHeroMax)
             {
                 for (int i = 0; i < tempHeroAvg.Count; i++)
@@ -1146,8 +1151,8 @@ namespace Parser.Service
             /// <param name="tempHeroMin">минимум</param>
             /// <param name="tempHeroMax">максимум</param>
             /// <param name="unused">список неиспользуемых героев</param>
-            protected void RemoveUnusedHero(List<HeroStatisticItemAvg> tempHeroAvg, 
-                List<HeroStatisticItemMin> tempHeroMin, List<HeroStatisticItemMax> 
+            protected void RemoveUnusedHero(List<HeroStatisticItemAvg> tempHeroAvg,
+                List<HeroStatisticItemMin> tempHeroMin, List<HeroStatisticItemMax>
                 tempHeroMax, List<int> unused)
             {
                 for (int i = 0; i < unused.Count; i++)
@@ -1186,10 +1191,221 @@ namespace Parser.Service
             }
         }
 
+        public class Clustering : CLIParser<object>
+        {
+            public string ClusterOutput;
+
+            public HeroClusters[] ClustersMapper;
+
+            public int ClusterCount;
+
+            public Clustering(string clusterOutput)
+            {
+                this.ClusterOutput = clusterOutput;
+            }
+
+            class ClusterMatch
+            {
+                private int count;
+                private int[] cluster;
+                private int[] subgroup;
+
+                public int Count { get => count; set => count = value; }
+                public int[] Cluster { get => cluster; set => cluster = value; }
+                public int[] Subgroup { get => subgroup; set => subgroup = value; }
+
+                public override string ToString()
+                {
+                    return HoTS_Service.Util.ToString.ReflexString(this);
+                }
+            }
+
+            public void Run()
+            {
+                var avg = RSParser.AvgStat;
+                var hero = HParser.Hero;
+
+                double[][] inputs = avg.Select(x => new double[]{
+                x.assassinRating,x.warriorRating,x.supportRating,x.specialistRating
+            }).ToArray();
+
+                log("debug", "Кластеризация начата");
+
+                // кластаризация
+                GaussianMixtureModel gmm = new GaussianMixtureModel(9)
+                {
+                    Options =
+                            {
+                                Regularization = 1e-10
+                            }
+                };
+
+                log("debug", "Обучение модели начато");
+                // обучаем модель
+                var clusters = gmm.Learn(inputs);
+
+                log("succes", "Модель обучена");
+
+                // результат
+                int[] predicted = clusters.Decide(inputs);
+
+                log("debug", "Расчет вероятностей принадлежности классам");
+
+                // We can also obtain the log-likelihoods for each sample:
+                double[] logLikelihoods = clusters.LogLikelihood(inputs);
+
+                // As well as the probability of belonging to each cluster
+                double[][] probabilities = clusters.Probabilities(inputs);
+
+                log("succes", "Вероятности принадлежности классам расчитаны");
+
+                log("debug", "Объединение рассчитанных кластеров с подгрупной кластеризацией начато");
+
+                log("debug", "соединяем входные кластера, с id");
+                var predictedWithId = predicted
+                    .Select((Cluster, Id) => new { Cluster, Id })
+                    .ToArray();
+
+                log("debug", "соединяем подгруппы, с id");
+                var clusteredSubGroups = hero
+                    .Select((Hero, Id) => new { SubGroup = (int)Hero.SubGroup, Id })
+                    .ToArray();
+
+                log("debug", "соединяем подгруппы с кластерами");
+                var clusterMatch = predictedWithId
+                    .Join(clusteredSubGroups, e => e.Id, o => o.Id, (e, o) => new
+                    {
+                        o.SubGroup,
+                        e.Cluster
+                    })
+                    .ToArray();
+
+                log("debug", "получаем уникальные соответсвия подгруппа-кластер");
+                var uniqueMatch = clusterMatch
+                    .Select(g => new
+                    {
+                        Cluster = g.Cluster,
+                        SubGroup = g.SubGroup,
+                        Count = clusterMatch.
+                        Where(x => x.Cluster == g.Cluster && x.SubGroup == g.SubGroup).Count()
+                    }).Distinct().ToArray();
+
+                log("success", "Большие результатирующие класстера рассчитаны");
+                //результат: те соответсвия, которые имеют достаточное количество элементов
+                var endClusters = uniqueMatch
+                    .Where(x => x.Count > inputs.Length / uniqueMatch.Length)
+                    .Select(y => new ClusterMatch()
+                    {
+                        Count = y.Count,
+                        Cluster = new int[] { y.Cluster },
+                        Subgroup = new int[] { y.SubGroup }
+                    }).ToList();
+
+                log("success", "Малые результатирующие класстера рассчитаны");
+                //все что не попало
+                var littleClusters = uniqueMatch
+                  .Where(x => x.Count <= inputs.Length / uniqueMatch.Length)
+                  .ToArray();
+
+                log("debug", "Процесс объединения малых кластеров начат");
+
+                //группируем по кластерам
+                var littleClustersByCluster = littleClusters
+                    .GroupBy(x => x.Cluster)
+                    .ToArray();
+
+                //группируем по подгруппам
+                var littleClustersBySubGroup = littleClusters
+                   .GroupBy(x => x.SubGroup)
+                   .ToArray();
+
+                //группа с большими кластерами(значит меньше подгрупп)
+                var biggerClustersGroup = littleClustersByCluster.Length < littleClustersBySubGroup.Length
+                    ? littleClustersByCluster : littleClustersBySubGroup;
+
+                //объединение большей группы класетров
+                var resolved = biggerClustersGroup.Select(x =>
+                {
+                    var group = x.ToArray();
+                    int sum = 0;
+                    List<int> clusters2 = new List<int>();
+                    List<int> subgroups = new List<int>();
+                    foreach (var it in group)
+                    {
+                        sum += it.Count;
+                        clusters2.Add(it.Cluster);
+                        subgroups.Add(it.SubGroup);
+                    }
+                    return new ClusterMatch()
+                    {
+                        Count = sum,
+                        Cluster = clusters2.Distinct().ToArray(),
+                        Subgroup = subgroups.Distinct().ToArray()
+                    };
+                }).ToArray();
+
+                log("success", "Процесс объединения малых кластеров завершен");
+
+                endClusters.AddRange(resolved);
+
+                ClusterCount = endClusters.Count;
+
+                log("debug", "Расчет кластеров для героев начат");
+
+                ClustersMapper = clusterMatch.Select((x, Id) =>
+                {
+                    return new HeroClusters(Id)
+                    {
+                        Cluster = endClusters.FindIndex(y => y.Cluster.Contains(x.Cluster) && y.Subgroup.Contains(x.SubGroup)),
+                        Gaussian = new Gaussian()
+                        {
+                            Cluster = x.Cluster,
+                            Probability = probabilities[Id],
+                            LogLikelihoods = logLikelihoods[Id]
+                        },
+                        SubGroupCluster = (HeroSubGroup)x.SubGroup
+                    };
+                }).ToArray();
+
+                log("success", "Расчет кластеров для героев завершен");
+
+                Save(ClusterOutput, ClustersMapper, typeof(HeroClusters[]));
+
+            }
+
+            public override void Validate()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OpenSource(string path)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override object ParseData(object data)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override object ReadData()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void Save(string name, object obj, Type t)
+            {
+                string json = JSonParser.Save(obj, t);
+                File.WriteAllText(name, json);
+            }
+
+
+        }
+
         public class ModelParser : CLIParser<Match>
         {
-            string Input, Output,MatchUpOutput;
-            
+            string Input, Output, MatchUpOutput;
+
             SubGroupMatchHasher hasher = new SubGroupMatchHasher();
 
             public MatchupTable MatchupTable;
@@ -1210,7 +1426,7 @@ namespace Parser.Service
                     {
                         if (m.YourTeam[i] == 0)
                         {
-                            bits.AddRange(new bool[] {false,false,false });
+                            bits.AddRange(new bool[] { false, false, false });
                         }
                         else
                         {
@@ -1249,9 +1465,9 @@ namespace Parser.Service
                     bool[] arr = new bool[64];
                     b.CopyTo(arr, 0);
                     for (int i = 0; i < m.YourTeam.Length; i++)
-                        m.YourTeam[i] = FromBits(arr.Skip(3*i).Take(3).ToArray());
+                        m.YourTeam[i] = FromBits(arr.Skip(3 * i).Take(3).ToArray());
                     for (int i = 0; i < m.EnemyTeam.Length; i++)
-                        m.EnemyTeam[i] = FromBits(arr.Skip((m.YourTeam.Length)*3 + 3 * i).Take(3).ToArray());
+                        m.EnemyTeam[i] = FromBits(arr.Skip((m.YourTeam.Length) * 3 + 3 * i).Take(3).ToArray());
                     return m;
 
                 }
@@ -1267,7 +1483,7 @@ namespace Parser.Service
                 protected sbyte FromBits(bool[] value)
                 {
                     sbyte rez = 0;
-                    for(int i = 0; i < value.Length; i++)
+                    for (int i = 0; i < value.Length; i++)
                     {
                         rez += (sbyte)((value[i] == true ? 1 : 0) * Math.Pow(2, i));
                     }
@@ -1275,7 +1491,7 @@ namespace Parser.Service
                 }
             }
 
-            public ModelParser(string Input,string Output,string MatchUpOutput)
+            public ModelParser(string Input, string Output, string MatchUpOutput)
             {
                 this.Input = Input;
                 this.Output = Output;
@@ -1285,7 +1501,7 @@ namespace Parser.Service
             public SubGroupMatch SubGroupsFromMatch(Match m)
             {
                 SubGroupMatch subGroupMatch = new SubGroupMatch();
-                
+
                 for (int i = 0; i < m.YourTeam.Length; i++)
                 {
                     subGroupMatch.YourTeam[(int)HParser.Hero[m.YourTeam[i]].SubGroup - 1]++;
@@ -1324,9 +1540,9 @@ namespace Parser.Service
                         }
 
                         {
-                            string text = String.Join(",",match.YourTeam.Select(x => x.ToString()).ToArray()) +',';
+                            string text = String.Join(",", match.YourTeam.Select(x => x.ToString()).ToArray()) + ',';
                             text += String.Join(",", match.EnemyTeam.Select(x => x.ToString()).ToArray()) + ',';
-                            text += match.Map + "," + match.ProbabilityToWin;                      
+                            text += match.Map + "," + match.ProbabilityToWin;
                             file.WriteLine(text);
                         }
 
@@ -1368,12 +1584,12 @@ namespace Parser.Service
                 //все данные расчитаны
                 Save(Output, HashTable, HashTable.GetType());
                 File.WriteAllText(MatchUpOutput, JSonParser.Save(MatchupTable, typeof(MatchupTable)));
-                
+
             }
 
             private void UpdateMatchupTable(Match m)
             {
-                for(int i = 0; i < m.YourTeam.Length; i++)
+                for (int i = 0; i < m.YourTeam.Length; i++)
                 {
                     for (int j = 0; j < m.YourTeam.Length; j++)
                     {
@@ -1413,7 +1629,7 @@ namespace Parser.Service
                     {
                         int h1 = m.YourTeam[i];
                         int h2 = m.EnemyTeam[j];
-                        
+
                         int played = winAgainst[h1, h2].Value + 1;
                         int win = winAgainst[h1, h2].Key;
                         if (m.ProbabilityToWin == 1)
@@ -1441,11 +1657,11 @@ namespace Parser.Service
 
             private void ComputeMatchupTable()
             {
-                for(int i = 0; i < winWith.GetLength(0); i++)
+                for (int i = 0; i < winWith.GetLength(0); i++)
                 {
-                    for(int j = 0; j < winWith.GetLength(1); j++)
+                    for (int j = 0; j < winWith.GetLength(1); j++)
                     {
-                        MatchupTable.WinWith[i][j] = (double)winWith[i, j].Key 
+                        MatchupTable.WinWith[i][j] = (double)winWith[i, j].Key
                             / (double)winWith[i, j].Value;
                         MatchupTable.WinAgainst[i][j] = (double)winAgainst[i, j].Key
                             / (double)winAgainst[i, j].Value;
@@ -1484,7 +1700,7 @@ namespace Parser.Service
                     for (int i = 0; i < 5; i++)
                         m.YourTeam[i] = DParser.HeroMapper[Int32.Parse(data[i])];
                     for (int i = 0; i < 5; i++)
-                        m.EnemyTeam[i] = DParser.HeroMapper[Int32.Parse(data[i+5])];
+                        m.EnemyTeam[i] = DParser.HeroMapper[Int32.Parse(data[i + 5])];
                     m.Map = DParser.MapMapper[Int32.Parse(data[10])];
                     m.ProbabilityToWin = Double.Parse(data[11]);
 
@@ -1525,8 +1741,153 @@ namespace Parser.Service
                         var subgr = hasher.Restore(it.Key);
                         var yourTeam = string.Join(",", subgr.YourTeam);
                         var enemyTeam = string.Join(",", subgr.EnemyTeam);
-                        file.WriteLine(yourTeam + "," + enemyTeam + "," + 
+                        file.WriteLine(yourTeam + "," + enemyTeam + "," +
                               prob.ToString().Replace(",", "."));
+                    }
+                }
+            }
+        }
+
+        public class GaussianClusteringModelParser : CLIParser<Match>
+        {
+            string Input, Output;
+
+            HeroClusters[] Cluster = CParser.ClustersMapper;
+            int ClusterCount = CParser.ClusterCount;
+
+            public GaussianClusteringModelParser(string Input, string Output)
+            {
+                this.Input = Input;
+                this.Output = Output;
+            }
+
+            public void Run()
+            {
+                
+                OpenSource(Input);
+                object data = null;
+                Dictionary<string, Tuple<short, short>> HashTable = new Dictionary
+                    <string, Tuple<short, short>>();
+                int i = 0;
+
+                while ((data = ReadData()) != null)
+                {
+                    var match = ParseData(data);
+
+                    if (match == null)
+                    {
+                        log("debug", $"Строка {i + 1}");
+                        continue;
+                    }
+
+                    var clusterBasisMatch = ClusteringMatch(match);
+                    var clusterPart = string.Join(",", clusterBasisMatch.Item1);
+                    var resultPart = clusterBasisMatch.Item2;
+
+                    if (HashTable.ContainsKey(clusterPart) == false)
+                    {
+                        HashTable.Add(clusterPart, new Tuple<short, short>
+                            ((short)resultPart, 1));
+                    }
+                    else
+                    {
+                        var curItem = HashTable[clusterPart];
+                        HashTable[clusterPart] = new Tuple<short, short>
+                           ((short)(curItem.Item1 + (short)resultPart), (short)(curItem.Item2 + 1));
+                    }
+
+
+                    i++;
+                    if (i % 100000 == 0)
+                    {
+                        drawTextProgressBar(i, RSParser.Stat.Sum((x) => x.Statictic.Ammount * 2));
+                        // log("time", "Уже обработано " + i);
+                    }
+                }
+
+                Console.WriteLine();
+                //все данные расчитаны
+                Save(Output, HashTable, HashTable.GetType());
+
+            }
+
+            private Tuple<int[],double> ClusteringMatch(Match match)
+            {
+                int[] data = new int[ClusterCount * 2];
+                for(int i = 0; i < match.YourTeam.Length; i++)
+                {
+                    int cluster = Cluster[match.YourTeam[i]].Cluster;
+                    data[cluster]++;
+                }
+
+                for (int i = 0; i < match.EnemyTeam.Length; i++)
+                {
+                    int cluster = Cluster[match.EnemyTeam[i]].Cluster + ClusterCount;
+                    data[cluster]++;
+                }
+
+                return new Tuple<int[], double>(data,match.ProbabilityToWin);
+            }
+
+            public override void Validate()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OpenSource(string path)
+            {
+                log("debug", "Инициализация парсера модели для Гауссовского кластеризатора начата");
+                CSVParser.Load(path);
+                log("succes", "Инициализация парсера модели завершена");
+            }
+
+            protected override Match ParseData(object obj)
+            {
+                var data = obj as string[];
+                if (data == null)
+                    return null;
+                if (data.Length != 12)
+                {
+                    log("warng", "Неверный формат строки схемы повторов");
+                    return null;
+                }
+                Match m = new Match();
+                try
+                {
+                    //индексация в считанных данных и модели отличается,
+                    //используем маппер для приведения индексов считанных
+                    //данных к индексам модели
+                    for (int i = 0; i < 5; i++)
+                        m.YourTeam[i] = DParser.HeroMapper[Int32.Parse(data[i])];
+                    for (int i = 0; i < 5; i++)
+                        m.EnemyTeam[i] = DParser.HeroMapper[Int32.Parse(data[i + 5])];
+                    m.Map = DParser.MapMapper[Int32.Parse(data[10])];
+                    m.ProbabilityToWin = Double.Parse(data[11]);
+
+                }
+                catch
+                {
+                    log("warng", "Неверный формат строки схемы повтора");
+                    return null;
+                }
+                return m;
+            }
+
+
+            protected override object ReadData()
+            {
+                return CSVParser.Next();
+            }
+
+            protected override void Save(string name, object obj, Type t)
+            {
+                Dictionary<string, Tuple<short, short>> arr = obj as Dictionary<string, Tuple<short, short>>;
+                using (var file = CSVParser.Save(name))
+                {
+                    foreach (var it in arr)
+                    {
+                        double prob = (double)it.Value.Item1 / (double)it.Value.Item2;
+                        file.WriteLine(it.Key + "," + prob.ToString().Replace(",", "."));
                     }
                 }
             }
@@ -1541,8 +1902,10 @@ namespace Parser.Service
         public static CSVParser CSVParser;
         public static CSVBatchParser CSVBParser;
         public static DeleterParser DParser;
+        public static Clustering CParser;
         public static ModelParser MDParser;
-        
+        public static GaussianClusteringModelParser GCParser;
+
 
         public override void Run(string[] args)
         {
@@ -1611,6 +1974,11 @@ namespace Parser.Service
             DParser.Run();
             log("succes", "Очистка данных от пустых записей завершен");
 
+            //кластеризация
+            log("debug", "Кластеризация начата");
+            CParser = new Clustering(Output[12]);
+            CParser.Run();
+            log("succes", "Кластеризация завершена");
             //создаем конечную модель
             log("debug", "Формирование данных для модели начато");
             if (ExistAll(Output[6], Output[11]) == false)
@@ -1621,8 +1989,17 @@ namespace Parser.Service
             else
             {
                 log("info", "Найдены старые данные для модели. " +
-                    "Процесс формирования данных для модели прекоащен.");
+                    "Процесс формирования данных для модели прекращен." +
+                    "Если вы хотите запустить процесс формирования данных для модели" +
+                    "заного, удалите: " + $"{Output[6]}, {Output[11]}");
             }
+            if (ExistAll(Output[13]) == false)
+            {
+                GCParser = new GaussianClusteringModelParser(Output[2], Output[13]);
+                GCParser.Run();
+            }
+            
+
             log("succes", "Формирование данных для модели завершено");
         }
 

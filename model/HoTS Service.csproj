@@ -48,6 +48,7 @@
     <Compile Include="Entity\Enum\HeroGroup.cs" />
     <Compile Include="Entity\Enum\HeroSubGroup.cs" />
     <Compile Include="Entity\Enum\ResourceType.cs" />
+    <Compile Include="Entity\HeroClusters.cs" />
     <Compile Include="Entity\HeroDetails.cs" />
     <Compile Include="Entity\Map.cs" />
     <Compile Include="Entity\Hero.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Entity\Statistic.cs" />
     <Compile Include="Entity\StormObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\HeroClustersService.cs" />
     <Compile Include="Service\HeroDetailsService.cs" />
     <Compile Include="Service\HeroStatisticService.cs" />
     <Compile Include="Service\IForecast.cs" />
