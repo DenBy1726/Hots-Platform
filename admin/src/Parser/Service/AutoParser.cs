@@ -1232,7 +1232,7 @@ namespace Parser.Service
                 log("debug", "Кластеризация начата");
 
                 // кластаризация
-                GaussianMixtureModel gmm = new GaussianMixtureModel(9)
+                GaussianMixtureModel gmm = new GaussianMixtureModel(6)
                 {
                     Options =
                             {
@@ -1406,8 +1406,6 @@ namespace Parser.Service
         {
             string Input, Output, MatchUpOutput;
 
-            SubGroupMatchHasher hasher = new SubGroupMatchHasher();
-
             public MatchupTable MatchupTable;
 
             private KeyValuePair<int, int>[,] winWith = new KeyValuePair<int, int>
@@ -1415,82 +1413,7 @@ namespace Parser.Service
 
             private KeyValuePair<int, int>[,] winAgainst = new KeyValuePair<int, int>
                [HParser.Hero.Count, HParser.Hero.Count];
-
-            public class SubGroupMatchHasher
-            {
-                List<bool> bits;
-                public Int64 Hash(SubGroupMatch m)
-                {
-                    bits = new List<bool>();
-                    for (int i = 0; i < m.YourTeam.Length; i++)
-                    {
-                        if (m.YourTeam[i] == 0)
-                        {
-                            bits.AddRange(new bool[] { false, false, false });
-                        }
-                        else
-                        {
-                            ToBits(m.YourTeam[i]);
-                            while (bits.Count % 3 != 0)
-                                bits.Add(false);
-                        }
-                    }
-                    for (int i = 0; i < m.EnemyTeam.Length; i++)
-                    {
-                        if (m.EnemyTeam[i] == 0)
-                        {
-                            bits.AddRange(new bool[] { false, false, false });
-                        }
-                        else
-                        {
-                            ToBits(m.EnemyTeam[i]);
-                            while (bits.Count % 3 != 0)
-                                bits.Add(false);
-                        }
-                    }
-                    while (bits.Count < 64)
-                        bits.Add(false);
-                    BitArray arr = new BitArray(bits.ToArray());
-                    Int32[] array = new Int32[2];
-                    arr.CopyTo(array, 0);
-                    return ((Int64)array[0]) << 32 | array[1];
-                }
-
-                public SubGroupMatch Restore(Int64 hash)
-                {
-                    SubGroupMatch m = new SubGroupMatch();
-                    BitArray b = new BitArray(new Int32[] {
-                    (Int32)(hash >> 32),
-                        (Int32)(hash & 0x00000000FFFFFFFFL) });
-                    bool[] arr = new bool[64];
-                    b.CopyTo(arr, 0);
-                    for (int i = 0; i < m.YourTeam.Length; i++)
-                        m.YourTeam[i] = FromBits(arr.Skip(3 * i).Take(3).ToArray());
-                    for (int i = 0; i < m.EnemyTeam.Length; i++)
-                        m.EnemyTeam[i] = FromBits(arr.Skip((m.YourTeam.Length) * 3 + 3 * i).Take(3).ToArray());
-                    return m;
-
-                }
-
-                protected void ToBits(int value)
-                {
-                    while (value != 0)
-                    {
-                        bits.Add(value % 2 == 1);
-                        value /= 2;
-                    }
-                }
-                protected sbyte FromBits(bool[] value)
-                {
-                    sbyte rez = 0;
-                    for (int i = 0; i < value.Length; i++)
-                    {
-                        rez += (sbyte)((value[i] == true ? 1 : 0) * Math.Pow(2, i));
-                    }
-                    return rez;
-                }
-            }
-
+        
             public ModelParser(string Input, string Output, string MatchUpOutput)
             {
                 this.Input = Input;
@@ -1517,10 +1440,9 @@ namespace Parser.Service
             {
                 OpenSource(Input);
                 object data = null;
-                SubGroupMatchHasher hasher = new SubGroupMatchHasher();
                 MatchupTable = new MatchupTable(HParser.Hero.Count);
-                Dictionary<Int64, Tuple<short, short>> HashTable = new Dictionary
-                    <long, Tuple<short, short>>();
+                Dictionary<string, Tuple<short, short>> HashTable = new Dictionary
+                    <string, Tuple<short, short>>();
                 int i = 0;
 
                 string fDir = Path.GetDirectoryName(Input);
@@ -1549,24 +1471,18 @@ namespace Parser.Service
                         UpdateMatchupTable(match);
 
                         var subMatch = SubGroupsFromMatch(match);
-                        var hash = hasher.Hash(subMatch);
-                        var assert = hasher.Restore(hash);
+                        var clusterPart = string.Join(",", subMatch.EnemyTeam) + ",";
+                        clusterPart += string.Join(",", subMatch.YourTeam);
 
-                        if (subMatch.Equals(assert) == false)
+                        if (HashTable.ContainsKey(clusterPart) == false)
                         {
-                            log("warng", "Ошибка хэш функции. Парсинг продолжается");
-                            continue;
-                        }
-
-                        if (HashTable.ContainsKey(hash) == false)
-                        {
-                            HashTable.Add(hash, new Tuple<short, short>
+                            HashTable.Add(clusterPart, new Tuple<short, short>
                                 ((short)match.ProbabilityToWin, 1));
                         }
                         else
                         {
-                            var curItem = HashTable[hash];
-                            HashTable[hash] = new Tuple<short, short>
+                            var curItem = HashTable[clusterPart];
+                            HashTable[clusterPart] = new Tuple<short, short>
                                ((short)(curItem.Item1 + (short)match.ProbabilityToWin), (short)(curItem.Item2 + 1));
                         }
 
@@ -1721,28 +1637,13 @@ namespace Parser.Service
 
             protected override void Save(string name, object obj, Type t)
             {
-                Dictionary<Int64, Tuple<short, short>> arr = obj as Dictionary<Int64, Tuple<short, short>>;
+                Dictionary<string, Tuple<short, short>> arr = obj as Dictionary<string, Tuple<short, short>>;
                 using (var file = CSVParser.Save(name))
                 {
                     foreach (var it in arr)
                     {
-                        if (KeysParam.removeNoiseData == true)
-                        {
-                            if (it.Value.Item2 <= 2)
-                                continue;
-                        }
                         double prob = (double)it.Value.Item1 / (double)it.Value.Item2;
-
-                        if (KeysParam.removeNonDeterminate == true)
-                        {
-                            if (prob >= 0.3 && prob <= 0.7)
-                                continue;
-                        }
-                        var subgr = hasher.Restore(it.Key);
-                        var yourTeam = string.Join(",", subgr.YourTeam);
-                        var enemyTeam = string.Join(",", subgr.EnemyTeam);
-                        file.WriteLine(yourTeam + "," + enemyTeam + "," +
-                              prob.ToString().Replace(",", "."));
+                        file.WriteLine(it.Key + "," + prob.ToString().Replace(",", "."));
                     }
                 }
             }
