@@ -45,6 +45,8 @@ namespace Classifier
         {
             if (Directory.Exists("./Source/Network") == false)
                 Directory.CreateDirectory("./Source/Network");
+            if (Directory.Exists("./Source/Network/Report") == false)
+                Directory.CreateDirectory("./Source/Network/Report");
             Config cfg = new Config("Classifier.config");
 
             log("info", "Конфиг:" + cfg.ToString());
@@ -166,7 +168,9 @@ namespace Classifier
                     {
                         better = current;
                         File.WriteAllText("./Source/Network/Best_" +
-                            Path.GetFileNameWithoutExtension(file) + ".json", JSONWebParser.Save(network));      
+                            Path.GetFileNameWithoutExtension(file) + ".json", JSONWebParser.Save(network));
+                        File.WriteAllText("./Source/Network/Report/Best_" +
+                            Path.GetFileNameWithoutExtension(file) + ".json", JSONWebParser.Save(better));
                     }
                     better.WriteTop();
 
@@ -174,6 +178,9 @@ namespace Classifier
                 File.WriteAllText("./Source/Network/" + Path.GetFileNameWithoutExtension(file)
                      + ".json", 
                     JSONWebParser.Save(network));
+                File.WriteAllText("./Source/Network/Report/" + Path.GetFileNameWithoutExtension(file)
+                     + ".json",
+                    JSONWebParser.Save(current));
 
 
             }
