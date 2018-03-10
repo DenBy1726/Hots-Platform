@@ -22,6 +22,12 @@ namespace HoTS_Service.Util
             var ser = new JavaScriptSerializer();
             return ser.DeserializeObject(json);
         }
+
+        public static string Save(object obj)
+        {
+            var ser = new JavaScriptSerializer();
+            return ser.Serialize(obj);
+        }
     }
 
     public static class JSonParser

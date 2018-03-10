@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Classifier
 {
+
     [DataContract]
     public class Config
     {
@@ -43,6 +44,10 @@ namespace Classifier
             filter = json.Filter;
             MoreInfoLog = json.MoreInfoLog;
         }
+        public override string ToString()
+        {
+            return HoTS_Service.Util.ToString.ReflexString(this);
+        }
     }
 
     [DataContract]
@@ -60,6 +65,11 @@ namespace Classifier
         public double ValidationPercent { get => validationPercent; set => validationPercent = value; }
         [DataMember]
         public bool Shuffle { get => shuffle; set => shuffle = value; }
+
+        public override string ToString()
+        {
+            return HoTS_Service.Util.ToString.ReflexString(this);
+        }
     }
 
     [DataContract]
@@ -78,6 +88,11 @@ namespace Classifier
         public double Step { get => step; set => step = value; }
         [DataMember]
         public double Percent { get => percent; set => percent = value; }
+
+        public override string ToString()
+        {
+            return HoTS_Service.Util.ToString.ReflexString(this);
+        }
     }
 
     [DataContract]
@@ -87,6 +102,11 @@ namespace Classifier
 
         [DataMember]
         public double Percent { get => percent; set => percent = value; }
+
+        public override string ToString()
+        {
+            return HoTS_Service.Util.ToString.ReflexString(this);
+        }
     }
 
     [DataContract]
@@ -112,6 +132,11 @@ namespace Classifier
         {
             return range.Any(x => x.IsInside(value));
         }
+
+        public override string ToString()
+        {
+            return HoTS_Service.Util.ToString.ReflexString(this);
+        }
     }
 
     [DataContract]
@@ -128,6 +153,11 @@ namespace Classifier
         public bool IsInside(double value)
         {
             return value > from && value < to;
+        }
+
+        public override string ToString()
+        {
+            return HoTS_Service.Util.ToString.ReflexString(this);
         }
     }
 }
