@@ -1839,7 +1839,7 @@ namespace Parser.Service
             log("succes", "Парсинг карт завершен");
 
             //считываем данные схемы повторов, сохраняем в память
-            if (ExistAll(Output[2],Output[3], Output[5])== false)
+            if (ExistAll(Output[2], Output[3], Output[5]) == false)
             {
                 log("debug", "Парсинг повторов начат");
                 RSParser = new ReplaySchemaParser(Input[2], Input.InputFolder + Input.Path[3],
@@ -1853,10 +1853,10 @@ namespace Parser.Service
                 RSParser = new ReplaySchemaParser(Input[2], Input.InputFolder + Input.Path[3],
                     Input.Name[3], Output[2], Output[3], Output[5]);
                 string json = System.IO.File.ReadAllText(Output[5]);
-                var stats = (Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[], 
+                var stats = (Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[],
                     HeroStatisticItemMax[]>)
                     JSonParser.Load(json,
-                    typeof(Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[], 
+                    typeof(Tuple<HeroStatisticItemAvg[], HeroStatisticItemMin[],
                     HeroStatisticItemMax[]>));
                 RSParser.AvgStat = stats.Item1;
                 RSParser.MinStat = stats.Item2;
@@ -1894,14 +1894,14 @@ namespace Parser.Service
                     "Если вы хотите запустить процесс формирования данных для модели" +
                     "заного, удалите: " + $"{Output[6]}, {Output[11]}");
             }
-            if (ExistAll(Output[13]) == false)
-            {
-                GCParser = new GaussianClusteringModelParser(Output[2], Output[13]);
-                GCParser.Run();
-            }
-            
-
             log("succes", "Формирование данных для модели завершено");
+
+            log("debug", "Формирование кластеризованных данных для модели начато");
+            GCParser = new GaussianClusteringModelParser(Output[2], Output[13]);
+            GCParser.Run();
+            log("succes", "Формирование кластеризованных данных для модели завершено");
+
+
         }
 
         private bool ExistAll(params string[] files)

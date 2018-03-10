@@ -58,7 +58,6 @@
     <Compile Include="Service\DeleterParserTests.cs" />
     <Compile Include="Service\HeroParserTests.cs" />
     <Compile Include="Service\MapParserTests.cs" />
-    <Compile Include="Service\MatchHasherTests.cs" />
     <Compile Include="Service\NeuralNetoworkForecastTests.cs" />
     <Compile Include="Service\OutputFileParamTests.cs" />
     <Compile Include="Service\ReplaySchemaParserTests.cs" />

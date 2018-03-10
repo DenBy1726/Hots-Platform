@@ -13,159 +13,163 @@ using Accord.MachineLearning;
 using HoTS_Service.Entity.Enum;
 using HoTS_Service.Util;
 using System.IO;
+using Parser;
+using Accord.Neuro;
+using Accord.Neuro.Learning;
+using Accord.Statistics.Kernels;
+using static HoTS_Service.Util.NNLoger;
 
 namespace Classifier
 {
-    class ClusterMatch
-    {
-        private int count;
-        private int[] cluster;
-        private int[] subgroup;
-
-        public int Count { get => count; set => count = value; }
-        public int[] Cluster { get => cluster; set => cluster = value; }
-        public int[] Subgroup { get => subgroup; set => subgroup = value; }
-
-        public override string ToString()
-        {
-            return HoTS_Service.Util.ToString.ReflexString(this);
-        }
-    }
 
     class Program
     {
+        struct LogInfo
+        {
+            public double error;
+            public int iteration;
+            public double validError;
+            public double percent;
+            public double validPercent;
+
+            public void WriteTop()
+            {
+                Console.SetCursorPosition(0, 0);
+                log(iteration, error, validError, percent, validPercent);
+                Console.WriteLine("________________________________________");
+            }
+
+        }
+
         static void Main(string[] args)
         {
-            HeroStatisticService heroes = new HeroStatisticService();
-            HeroService hero = new HeroService();
-            heroes.Load("./Source/Replay/Statistic_sho.json");
-            hero.Load("./Source/Hero/Hero.json");
+            if (Directory.Exists("./Source/Network") == false)
+                Directory.CreateDirectory("./Source/Network");
+            Config cfg = new Config("Classifier.config");
+            //File.WriteAllText("Classifier.config", JSonParser.Save(cfg, typeof(Config)));
 
-            HeroStatisticItemAvg[] avg = heroes.All().Item1;
-            double[][] inputs = avg.Select(x => new double[]{
-                x.assassinRating,x.warriorRating,x.supportRating,x.specialistRating
-            }).ToArray();
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
 
-            // кластаризация
-            GaussianMixtureModel gmm = new GaussianMixtureModel(9)
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
+
+
+            // Convert the DataTable to input and output vectors
+            foreach (var file in cfg.Input)
             {
-                Options =
+                using (CSVParser parser = new CSVParser().Load(file))
                 {
-                    Regularization = 1e-10
-                }
-            };
-
-            // обучаем модель
-            var clusters = gmm.Learn(inputs);
-
-            // результат
-            int[] predicted = clusters.Decide(inputs);
-
-            // We can also obtain the log-likelihoods for each sample:
-            double[] logLikelihoods = clusters.LogLikelihood(inputs);
-
-            // As well as the probability of belonging to each cluster
-            double[][] probabilities = clusters.Probabilities(inputs);
-
-            //соединяем входные кластера, с id
-            var predictedWithId = predicted
-                .Select((Cluster, Id) => new { Cluster, Id })
-                .ToArray();
-
-            //соединяем подгруппы, с id
-            var clusteredSubGroups = hero
-                .All()
-                .Select((Hero, Id) => new { SubGroup = (int)Hero.SubGroup, Id })
-                .ToArray();
-
-            //соединяем подгруппы с кластерами 
-            var clusterMatch = predictedWithId
-                .Join(clusteredSubGroups, e => e.Id, o => o.Id, (e, o) => new
-                {
-                    o.SubGroup,
-                    e.Cluster
-                })
-                .ToArray();
-
-            //получаем уникальные соответсвия подгруппа-кластер
-            var uniqueMatch = clusterMatch
-                .Select(g => new
-                {
-                    Cluster = g.Cluster,
-                    SubGroup = g.SubGroup,
-                    Count = clusterMatch.
-                    Where(x => x.Cluster == g.Cluster && x.SubGroup == g.SubGroup).Count()
-                }).Distinct().ToArray();
-
-            //результат: те соответсвия, которые имеют достаточное количество элементов
-            var endClusters = uniqueMatch
-                .Where(x => x.Count > inputs.Length / uniqueMatch.Length)
-                .Select(y => new ClusterMatch()
-                {
-                    Count = y.Count,
-                    Cluster = new int[]{ y.Cluster },
-                    Subgroup = new int[] { y.SubGroup }
-                }).ToList();
-
-
-            //все что не попало
-            var littleClusters = uniqueMatch
-              .Where(x => x.Count <= inputs.Length / uniqueMatch.Length)
-              .ToArray();
-
-            //группируем по кластерам
-            var littleClustersByCluster = littleClusters
-                .GroupBy(x => x.Cluster)
-                .ToArray();
-
-            //группируем по подгруппам
-            var littleClustersBySubGroup = littleClusters
-               .GroupBy(x => x.SubGroup)
-               .ToArray();
-
-            //группа с большими кластерами(значит меньше подгрупп)
-            var biggerClustersGroup = littleClustersByCluster.Length < littleClustersBySubGroup.Length 
-                ? littleClustersByCluster : littleClustersBySubGroup;
-
-            //объединение большей группы класетров
-            var resolved = biggerClustersGroup.Select(x =>
-            {
-                var group = x.ToArray();
-                int sum = 0;
-                List<int> clusters2 = new List<int>();
-                List<int> subgroups = new List<int>();
-                foreach(var it in group)
-                {
-                    sum += it.Count;
-                    clusters2.Add(it.Cluster);
-                    subgroups.Add(it.SubGroup);
-                }
-                return new ClusterMatch(){
-                    Count = sum,
-                    Cluster = clusters2.Distinct().ToArray(),
-                    Subgroup = subgroups.Distinct().ToArray()
-                };
-            }).ToArray();
-
-            endClusters.AddRange(resolved);
-
-            var result = clusterMatch.Select((x, Id) =>
-            {
-                return new HeroClusters(Id)
-                {
-                    Cluster = endClusters.FindIndex(y => y.Cluster.Contains(x.Cluster) && y.Subgroup.Contains(x.SubGroup)),
-                    Gaussian = new Gaussian()
+                    List<Tuple<double[], double>> dataset =
+                       new List<Tuple<double[], double>>();
+                    string[] buff;
+                    double[] inputBuff;
+                    double outputBuff;
+                    while ((buff = parser.Next()) != null)
                     {
-                        Cluster = x.Cluster,
-                        Probability = probabilities[Id],
-                        LogLikelihoods = logLikelihoods[Id]
-                    },
-                    SubGroupCluster = (HeroSubGroup)x.SubGroup
-                };
-            }).ToArray();
+                        inputBuff = buff.Take(buff.Length - 1).ToArray().ToDouble();
+                        outputBuff = Double.Parse(buff.Skip(buff.Length - 1).ToArray()[0]);
+                        dataset.Add(new Tuple<double[], double>(inputBuff, outputBuff));
+                    }
 
-            string json = JSonParser.Save(result, typeof(HeroClusters[]));
-            File.WriteAllText("./Source/Hero/HeroClusters.json",json);
+                    dataset = dataset
+                        .Where(x => cfg.Filter.IsInside(x.Item2))
+                        .Take(cfg.Filter.Max)
+                        .ToList();
+                    if (cfg.Network.Shuffle)
+                        dataset.Shuffle();
+                    var trainData = dataset
+                        .Take((int)(dataset.Count * (1 - cfg.Network.ValidationPercent)))
+                        .ToArray();
+                    var validData = dataset
+                        .Skip((int)(dataset.Count * (1 - cfg.Network.ValidationPercent)))
+                        .ToArray();
+
+                    var trainInput = trainData.Select(x => x.Item1).ToArray();
+                    var trainOutput = trainData.Select(x => new double[] { x.Item2 }).ToArray();
+                    var validInput = validData.Select(x => x.Item1).ToArray();
+                    var validOutput = validData.Select(x => new double[] { x.Item2 }).ToArray();
+                    var topology = new List<int>(cfg.Network.Layers)
+                    {
+                        1
+                    };
+                    var network = new ActivationNetwork(
+                        new SigmoidFunction(), trainInput[0].Length, topology.ToArray());
+                    var teacher = new ParallelResilientBackpropagationLearning(network);
+
+                    LogInfo current = new LogInfo()
+                    {
+                        error = double.PositiveInfinity,
+                        iteration = 0,
+                        percent = 0,
+                        validError = double.PositiveInfinity
+                    };
+
+                    LogInfo better = current;
+
+                    double previous;
+                    do
+                    {
+                        previous = current.error;
+                        current.error = teacher.RunEpoch(trainInput, trainOutput);
+
+                        if (cfg.MoreInfoLog)
+                        {
+                            int[] answers =
+                                validInput.Apply(network.Compute).GetColumn(0).
+                                Apply(x => x > 0.5 ? 1 : 0);
+                            current.validError = teacher.ComputeError(validInput, validOutput);
+                            int[] outputs = validOutput.Apply(x => x[0] > 0.5 ? 1 : 0);
+                            int pos = 0;
+                            for (int j = 0; j < answers.Length; j++)
+                            {
+                                if (answers[j] == outputs[j])
+                                    pos++;
+                            }
+                            current.validPercent = (double)pos / (double)answers.Length;
+
+                            answers =
+                                trainInput.Apply(network.Compute).GetColumn(0).
+                                Apply(x => x > 0.5 ? 1 : 0);
+                            outputs = trainOutput.Apply(x => x[0] > 0.5 ? 1 : 0);
+                            pos = 0;
+                            for (int j = 0; j < answers.Length; j++)
+                            {
+                                if (answers[j] == outputs[j])
+                                    pos++;
+                            }
+                            current.percent = (double)pos / (double)answers.Length;
+
+                            log(current.iteration, current.error, current.validError,
+                                current.percent, current.validPercent);
+                        }
+                        else
+                        {
+                            smalllog(current.iteration, current.error);
+                        }
+                        if (current.error < cfg.Cancelation.Error)
+                            break;
+                        if (Math.Abs(previous - current.error) < cfg.Cancelation.Step)
+                            break;
+                        if (current.iteration == cfg.Cancelation.MaxEpoch)
+                            break;
+                        if (current.percent >= cfg.Validation.Percent)
+                            break;
+                        current.iteration++;
+
+                        if (better.validPercent < current.validPercent)
+                        {
+                            better = current;
+                            network.Save("./Source/Network/Best_" + Path.GetFileName(file));
+                        }
+                        better.WriteTop();
+                        
+                    } while (true);
+                    network.Save("./Source/Network/" + Path.GetFileName(file));
+                }
+
+            }
+
         }
     }
 }
