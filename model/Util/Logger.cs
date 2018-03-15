@@ -62,9 +62,9 @@ namespace HoTS_Service.Util
 
         static Color GetBlendedColor(int percentage)
         {
-            if (percentage < 50)
-                return Interpolate(Color.Red, Color.Yellow, percentage / 50.0);
-            return Interpolate(Color.Yellow, Color.Lime, (percentage - 50) / 50.0);
+            if (percentage < 70)
+                return Interpolate(Color.Red, Color.Yellow, percentage / 70.0);
+            return Interpolate(Color.Yellow, Color.Lime, (percentage - 70) / 30.0);
         }
 
         static Color Interpolate(Color color1, Color color2, double fraction)

@@ -13,7 +13,7 @@ namespace Classifier
     [DataContract]
     public class Config
     {
-        string[] input = new string[] { "./Source/Model/NNDataGauss.csv" };
+        string[] input = new string[] { "./Source/Model/NNData.csv" };
         NetworkConfig network = new NetworkConfig();
         CancelationConfig cancelation = new CancelationConfig();
         ValidationConfig validation = new ValidationConfig();

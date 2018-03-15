@@ -45,8 +45,7 @@ namespace Classifier
         {
             if (Directory.Exists("./Source/Network") == false)
                 Directory.CreateDirectory("./Source/Network");
-            if (Directory.Exists("./Source/Network/Report") == false)
-                Directory.CreateDirectory("./Source/Network/Report");
+            
             Config cfg = new Config("Classifier.config");
 
             log("info", "Конфиг:" + cfg.ToString());
@@ -65,9 +64,9 @@ namespace Classifier
                 log("info", "Конфиг:" + cfg.ToString());
                 List<Tuple<double[], double>> dataset =
                        new List<Tuple<double[], double>>();
+                string root = Path.GetFileNameWithoutExtension(file);
                 using (CSVParser parser = new CSVParser().Load(file))
                 {
-
                     string[] buff;
                     double[] inputBuff;
                     double outputBuff;
@@ -138,7 +137,9 @@ namespace Classifier
                         answers =
                             trainInput.Apply(network.Compute).GetColumn(0).
                             Apply(x => x > 0.5 ? 1 : 0);
+                        
                         outputs = trainOutput.Apply(x => x[0] > 0.5 ? 1 : 0);
+
                         pos = 0;
                         for (int j = 0; j < answers.Length; j++)
                         {
@@ -167,24 +168,30 @@ namespace Classifier
                     if (better.validPercent < current.validPercent)
                     {
                         better = current;
-                        File.WriteAllText("./Source/Network/Best_" +
-                            Path.GetFileNameWithoutExtension(file) + ".json", JSONWebParser.Save(network));
-                        File.WriteAllText("./Source/Network/Report/Best_" +
-                            Path.GetFileNameWithoutExtension(file) + ".json", JSONWebParser.Save(better));
+                        SaveNetwork($"Best_{root}", validInput, validOutput, network, better);
                     }
                     better.WriteTop();
 
                 } while (true);
-                File.WriteAllText("./Source/Network/" + Path.GetFileNameWithoutExtension(file)
-                     + ".json", 
-                    JSONWebParser.Save(network));
-                File.WriteAllText("./Source/Network/Report/" + Path.GetFileNameWithoutExtension(file)
-                     + ".json",
-                    JSONWebParser.Save(current));
-
-
+                SaveNetwork(root, trainInput, trainOutput, network, current);
             }
+        }
 
+        private static void SaveNetwork(string root, double[][] Input,
+            double[][] Output, ActivationNetwork network, LogInfo info)
+        {
+            double[] output = Input.Apply(network.Compute).GetColumn(0);
+            double[] target = Output.Select(x => x[0]).ToArray();
+            double[] error = output.Subtract(target);
+            if (Directory.Exists($"./Source/Network/{root}") == false)
+                Directory.CreateDirectory($"./Source/Network/{root}/Report");
+            if (Directory.Exists($"./Source/Network/{root}/Report") == false)
+                Directory.CreateDirectory($"./Source/Network/{root}/Report");
+            File.WriteAllText($"./Source/Network/{root}/Network.json", JSONWebParser.Save(network));
+            File.WriteAllText($"./Source/Network/{root}/Report/TrainingState.json", JSONWebParser.Save(info));
+            File.WriteAllLines($"./Source/Network/{root}/Report/Output.csv",output.Select(x => x.ToString()));
+            File.WriteAllLines($"./Source/Network/{root}/Report/Target.csv", target.Select(x => x.ToString()));
+            File.WriteAllLines($"./Source/Network/{root}/Report/Error.csv", error.Select(x => x.ToString()));
         }
     }
 }
