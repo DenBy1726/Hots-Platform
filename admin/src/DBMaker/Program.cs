@@ -60,6 +60,17 @@ namespace DBMaker
             converter.CustomNameMapper["max_id"] = "id_max";
             converter.CustomNameMapper["avg_id"] = "id_avg";
 
+            string sequensers = @"alter sequence gaussian_id_seq minvalue 0 start with 0;
+select setval('gaussian_id_seq', 0, false);
+alter sequence heroclusters_id_seq minvalue 0 start with 0;
+select setval('heroclusters_id_seq', 0, false);
+alter sequence statisticheroesmax_id_seq minvalue 0 start with 0;
+select setval('statisticheroesmax_id_seq', 0, false);
+alter sequence statisticheroesmin_id_seq minvalue 0 start with 0;
+select setval('statisticheroesmin_id_seq', 0, false);
+alter sequence statisticheroesavg_id_seq minvalue 0 start with 0;
+select setval('statisticheroesavg_id_seq', 0, false);";
+
             string[] enumsTable = AppDomain.CurrentDomain.GetAssemblies()
                        .SelectMany(t => t.GetTypes())
                        .Where(t => t.IsEnum && t.Namespace == "HoTS_Service.Entity.Enum")
@@ -123,7 +134,7 @@ namespace DBMaker
 
             tables["statisticSho"] = converter.CreateTable("StatisticHeroes",
                 typeof(HeroStatistic), "id", new List<Foreign> {
-                   /* new Foreign()
+                    new Foreign()
                     {
                         DataTable = "StatisticHeroesMin",
                         Key = "id_min",
@@ -140,7 +151,7 @@ namespace DBMaker
                         DataTable = "StatisticHeroesMax",
                         Key = "id_max",
                         ForeignKey = "id"
-                    },*/
+                    },
                     new Foreign()
                     {
                         DataTable = "Hero",
@@ -205,23 +216,27 @@ namespace DBMaker
             data["statisticShoAvg"] = converter.Insert("StatisticHeroesAvg", hstats.All().Item1);
             data["statisticSho"] = HeroesStatisticData(hstats);
             data["matchupTable"] = MatchupData(matchups, heroes.Count());
-            data["heroClusters"] = converter.Insert("HeroClusters", clusters.All());
-            data["gaussian"] = converter.Insert("Gaussian", clusters.Select(x => x.Gaussian));
             int probId = 0;
+            data["gaussian"] = converter.Insert("Gaussian", clusters.Select(x => x.Gaussian));
             data["probabilities"] = converter.Insert("GaussianProbabilities",
-                clusters.
-                Select(x => x.Gaussian.Probability.
-                    Select((y, index) => new Probabilities()
-                    {
-                        id = probId++,
-                        value = y,
-                        gaussian_id = x.Id,
-                    })).SelectMany(z=>z));
-            //data["probabilities"] = converter.Insert("GaussianProbabilities",clusters.Select(x=>x.Gaussian.)
+               clusters.
+               Select(x => x.Gaussian.Probability.
+                   Select(y => new Probabilities()
+                   {
+                       id = probId++,
+                       value = y,
+                       gaussian_id = x.Id,
+                   })).SelectMany(z => z));
+            data["heroClusters"] = converter.Insert("HeroClusters", clusters.All());
+           
+
             File.WriteAllText("./Database/create.sql",
-                string.Join("\n", enumsTable) + string.Join("\n", tables.Select(x => x.Value).ToArray()));
+                string.Join("\n", enumsTable) + 
+                string.Join("\n", tables.Select(x => x.Value).ToArray()));
             File.WriteAllText("./Database/insert.sql",
-                string.Join("\n", enumsData) + string.Join("\n", data.Select(x => x.Value).ToArray()));
+                sequensers + "\n\n" + 
+                string.Join("\n", enumsData) + 
+                string.Join("\n", data.Select(x => x.Value).ToArray()));
         }
 
         static string StatisticSchema()
@@ -232,7 +247,9 @@ namespace DBMaker
                 "matches INT, \n" +
                 "wins INT, \n" +
                 "map_id INT,\n" +
-                "hero_id INT\n" +
+                "hero_id INT,\n" +
+                "FOREIGN KEY (map_id) REFERENCES Map(id),\n" +
+                "FOREIGN KEY (hero_id) REFERENCES Hero(id)\n" +
                 ");\n";
         }
 
@@ -300,7 +317,9 @@ namespace DBMaker
                 "win_with FLOAT8, \n" +
                 "win_against FLOAT8, \n" +
                 "hero_id1 INT,\n" +
-                "hero_id2 INT\n" +
+                "hero_id2 INT,\n" +
+                "FOREIGN KEY (hero_id1) REFERENCES Hero(id),\n" +
+                "FOREIGN KEY (hero_id2) REFERENCES Hero(id)\n" +
                 ");\n";
         }
 
