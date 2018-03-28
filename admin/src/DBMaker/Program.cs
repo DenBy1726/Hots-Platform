@@ -23,7 +23,7 @@ namespace DBMaker
     {
         public int id;
         public int gaussian_id;
-        public double values;
+        public double value;
     }
 
     class Program
@@ -40,7 +40,7 @@ namespace DBMaker
             details.Load("./Source/Hero/HeroDetails.json");
 
             HeroClustersSevice clusters = new HeroClustersSevice();
-            heroes.Load("./Source/Hero/HeroClusters.json");
+            clusters.Load("./Source/Hero/HeroClusters.json");
 
             MapService maps = new MapService();
             maps.Load("./Source/Map/Map.json");
@@ -55,6 +55,10 @@ namespace DBMaker
             matchups.Load("./Source/Replay/MatchupTable.json");
 
             PostegresConverter converter = new PostegresConverter();
+            converter.CustomNameMapper["group"] = "_group";
+            converter.CustomNameMapper["min_id"] = "id_min";
+            converter.CustomNameMapper["max_id"] = "id_max";
+            converter.CustomNameMapper["avg_id"] = "id_avg";
 
             string[] enumsTable = AppDomain.CurrentDomain.GetAssemblies()
                        .SelectMany(t => t.GetTypes())
@@ -63,19 +67,18 @@ namespace DBMaker
                        .ToArray();
 
             Dictionary<string, string> tables = new Dictionary<string, string>();
+            Dictionary<string, string> data = new Dictionary<string, string>();
             tables["heroesTable"] = converter.CreateTable("Hero", typeof(Hero), "Id",
                 new List<Foreign> {
                     new Foreign()
                     {
                         DataTable = "HeroGroup",
-                        Type = ForeignType.OneToMany,
                         Key = "_group",
                         ForeignKey = "id"
                     },
                      new Foreign()
                     {
                         DataTable = "HeroSubGroup",
-                        Type = ForeignType.OneToMany,
                         Key = "subgroup",
                         ForeignKey = "id"
                     }
@@ -85,28 +88,24 @@ namespace DBMaker
                     new Foreign()
                     {
                         DataTable = "Hero",
-                        Type = ForeignType.OneToOne,
                         Key = "id",
                         ForeignKey = "id"
                     },
                      new Foreign()
                     {
                         DataTable = "Difficulty",
-                        Type = ForeignType.OneToMany,
                         Key = "difficulty",
                         ForeignKey = "id"
                     },
                        new Foreign()
                     {
                         DataTable = "Franchise",
-                        Type = ForeignType.OneToMany,
                         Key = "franchise",
                         ForeignKey = "id"
                     },
                          new Foreign()
                     {
                         DataTable = "ResourceType",
-                        Type = ForeignType.OneToMany,
                         Key = "resourcetype",
                         ForeignKey = "id"
                     }
@@ -124,81 +123,112 @@ namespace DBMaker
 
             tables["statisticSho"] = converter.CreateTable("StatisticHeroes",
                 typeof(HeroStatistic), "id", new List<Foreign> {
-                    new Foreign()
+                   /* new Foreign()
                     {
                         DataTable = "StatisticHeroesMin",
-                        Type = ForeignType.OneToOne,
-                        Key = "min_id",
+                        Key = "id_min",
                         ForeignKey = "id"
                     },
                     new Foreign()
                     {
                         DataTable = "StatisticHeroesAvg",
-                        Type = ForeignType.OneToOne,
-                        Key = "avg_id",
+                        Key = "id_avg",
                         ForeignKey = "id"
                     },
                     new Foreign()
                     {
                         DataTable = "StatisticHeroesMax",
-                        Type = ForeignType.OneToOne,
-                        Key = "max_id",
+                        Key = "id_max",
                         ForeignKey = "id"
-                    },
+                    },*/
                     new Foreign()
                     {
                         DataTable = "Hero",
-                        Type = ForeignType.OneToOne,
                         Key = "id",
                         ForeignKey = "id"
                     }
                 });
 
-           
+
             tables["matchupTable"] = MatchupTableSchema();
 
             tables["gaussian"] = converter.CreateTable("Gaussian", typeof(Gaussian)
-                , "id", null);
+               , "id", null);
 
-            tables["probabilities"] = converter.CreateTable("GaussianProbabilities", 
-                typeof(Probabilities)
-                , "id", new List<Foreign> {
+            tables["probabilities"] = converter.CreateTable("GaussianProbabilities",
+            typeof(Probabilities)
+            , "id", new List<Foreign> {
                     new Foreign()
                     {
                         DataTable = "Gaussian",
-                        Type = ForeignType.OneToOne,
                         Key = "gaussian_id",
                         ForeignKey = "id"
                     }
-                });
+            });
+
+           
 
             tables["heroClusters"] = converter.CreateTable("HeroClusters", typeof(HeroClusters)
                 , "id", new List<Foreign> {
                     new Foreign()
                     {
                         DataTable = "Hero",
-                        Type = ForeignType.OneToOne,
                         Key = "id",
                         ForeignKey = "id"
                     },
                     new Foreign()
                     {
                         DataTable = "Gaussian",
-                        Type = ForeignType.OneToOne,
                         Key = "gaussian",
+                        ForeignKey = "id"
+                    },
+                    new Foreign()
+                    {
+                        DataTable = "HeroSubGroup",
+                        Key = "subgroupcluster",
                         ForeignKey = "id"
                     }
                 });
-            
-            File.WriteAllText("./Database/create.sql", 
-                string.Join("\n", enumsTable) + string.Join("\n",tables.Select(x=>x.Value).ToArray()));
+
+            string[] enumsData = AppDomain.CurrentDomain.GetAssemblies()
+                       .SelectMany(t => t.GetTypes())
+                       .Where(t => t.IsEnum && t.Namespace == "HoTS_Service.Entity.Enum")
+                       .Select(_enum => converter.InsertDictionary(_enum))
+                       .ToArray();
+
+            data["heroesTable"] = converter.Insert("Hero", heroes.All());
+            data["detailsTable"] = converter.Insert("HeroDetails", details.All());
+            data["mapTable"] = converter.Insert("Map", maps.All());
+            data["statisticTable"] = StatisticData(stats);
+            data["statisticShoMin"] = converter.Insert("StatisticHeroesMin", hstats.All().Item2);
+            data["statisticShoMax"] = converter.Insert("StatisticHeroesMax", hstats.All().Item3);
+            data["statisticShoAvg"] = converter.Insert("StatisticHeroesAvg", hstats.All().Item1);
+            data["statisticSho"] = HeroesStatisticData(hstats);
+            data["matchupTable"] = MatchupData(matchups, heroes.Count());
+            data["heroClusters"] = converter.Insert("HeroClusters", clusters.All());
+            data["gaussian"] = converter.Insert("Gaussian", clusters.Select(x => x.Gaussian));
+            int probId = 0;
+            data["probabilities"] = converter.Insert("GaussianProbabilities",
+                clusters.
+                Select(x => x.Gaussian.Probability.
+                    Select((y, index) => new Probabilities()
+                    {
+                        id = probId++,
+                        value = y,
+                        gaussian_id = x.Id,
+                    })).SelectMany(z=>z));
+            //data["probabilities"] = converter.Insert("GaussianProbabilities",clusters.Select(x=>x.Gaussian.)
+            File.WriteAllText("./Database/create.sql",
+                string.Join("\n", enumsTable) + string.Join("\n", tables.Select(x => x.Value).ToArray()));
+            File.WriteAllText("./Database/insert.sql",
+                string.Join("\n", enumsData) + string.Join("\n", data.Select(x => x.Value).ToArray()));
         }
 
         static string StatisticSchema()
         {
-            return "CREATE TABLE IF NOT EXISTS STATISTIC \n" +
+            return "CREATE TABLE IF NOT EXISTS Statistic \n" +
                 "( \n" +
-                "id SERIAL PRIMARY KEY,\n" +
+                "id SERIAL UNIQUE PRIMARY KEY,\n" +
                 "matches INT, \n" +
                 "wins INT, \n" +
                 "map_id INT,\n" +
@@ -206,15 +236,71 @@ namespace DBMaker
                 ");\n";
         }
 
+        static string StatisticData(StatisticService statService)
+        {
+            StatisticItem[] stat = statService.All().Select(x=>x.Statictic).ToArray();
+            int id = 0;
+            string result = "";
+            string result1 = "INSERT INTO Statistic(id,matches,wins,map_id,hero_id)\n";
+            string result2 = "VALUES (";
+            for (int i = 0; i < stat.Length; i++)
+            {
+                for(int j = 0; j < stat[i].Matches.Length; j++,id++)
+                {
+                    int matches = stat[i].Matches[j];
+                    int wins = stat[i].Wins[j];
+                    int mapId = i;
+                    int heroId = j;
+                    result += result1 + result2 + 
+                    $"{id},{matches},{wins},{mapId},{heroId}" + ");\n";
+                }   
+            }
+
+            return result;
+        }
+
+        static string HeroesStatisticData(HeroStatisticService hstatService)
+        {
+            string result = "";
+            string result1 = "INSERT INTO StatisticHeroes(id,id_min,id_max,id_avg)\n";
+            string result2 = "VALUES (";
+            var stat = hstatService.All();
+            for(int i = 0; i < stat.Item1.Length; i++)
+            {
+                result += result1 + result2 +
+                    $"{i},{i},{i},{i}" + ");\n";
+            }
+            return result;
+        }
+
+        static string MatchupData(MatchupService matchup,int count)
+        {
+            string result = "";
+            string result1 = "INSERT INTO MatchupTable(id,win_with,win_against,hero_id1,hero_id2)\n";
+            string result2 = "VALUES (";
+            int id = 0;
+            for (int i = 0; i < count; i++)
+            {
+                for (int j = 0; j < count; j++,id++)
+                {
+                    result += result1 + result2 +
+                   $"{id}," +
+                   $"{matchup.With(i,j).ToString().Replace(",",".")}," +
+                   $"{matchup.Against(i,j).ToString().Replace(",", ".")},{i},{j}" + ");\n";
+                }
+            }
+            return result;
+        }
+
         static string MatchupTableSchema()
         {
             return "CREATE TABLE IF NOT EXISTS MatchupTable \n" +
                 "( \n" +
-                "id SERIAL PRIMARY KEY,\n" +
+                "id SERIAL UNIQUE PRIMARY KEY,\n" +
                 "win_with FLOAT8, \n" +
                 "win_against FLOAT8, \n" +
-                "map_id INT,\n" +
-                "hero_id INT\n" +
+                "hero_id1 INT,\n" +
+                "hero_id2 INT\n" +
                 ");\n";
         }
 

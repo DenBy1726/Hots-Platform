@@ -8,21 +8,17 @@ namespace DBMaker
 {
     interface IConverter
     {
-        string Insert(object obj);
+        string Insert(string table,object obj);
+        string Insert(string table,IEnumerable<object> obj);
+        string InsertDictionary(Type type);
         string CreateTable(string name, Type obj, string primaryKey, List<Foreign> foreign);
         string CreateDictionary(string name);
         string CreateFK(Foreign foreign);
         string MapType(Type type);
     }
 
-    public enum ForeignType
-    {
-        OneToOne,OneToMany,ManyTomany
-    }
-
     public class Foreign
     {
-        public ForeignType Type;
         public string Key;
         public string ForeignKey;
         public string DataTable;
