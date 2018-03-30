@@ -30,8 +30,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Colorful.Console">
-      <HintPath>..\packages\Colorful.Console.1.2.6\lib\net45\Colorful.Console.dll</HintPath>
+    <Reference Include="Accord">
+      <HintPath>..\packages\Accord.3.8.0\lib\net45\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math">
+      <HintPath>..\packages\Accord.Math.3.8.0\lib\net45\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Neuro">
+      <HintPath>..\packages\Accord.Neuro.3.8.0\lib\net45\Accord.Neuro.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Statistics">
+      <HintPath>..\packages\Accord.Statistics.3.8.0\lib\net45\Accord.Statistics.dll</HintPath>
+    </Reference>
+    <Reference Include="Colorful.Console, Version=1.2.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Colorful.Console.1.2.6\lib\net452\Colorful.Console.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,6 +59,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entity\AIDto\ActivationFunction.cs" />
+    <Compile Include="Entity\AIDto\Layer.cs" />
+    <Compile Include="Entity\AIDto\MetaNetwork.cs" />
+    <Compile Include="Entity\AIDto\Network.cs" />
+    <Compile Include="Entity\AIDto\Neuron.cs" />
+    <Compile Include="Entity\AIDto\Quartiles.cs" />
+    <Compile Include="Entity\AIDto\RandGenerator.cs" />
+    <Compile Include="Entity\AIDto\Support.cs" />
     <Compile Include="Entity\Enum\Difficulty.cs" />
     <Compile Include="Entity\Enum\Franchise.cs" />
     <Compile Include="Entity\Enum\GameMode.cs" />
@@ -53,6 +74,7 @@
     <Compile Include="Entity\Enum\HeroSubGroup.cs" />
     <Compile Include="Entity\Enum\ResourceType.cs" />
     <Compile Include="Entity\HeroClusters.cs" />
+    <Compile Include="Entity\HeroData.cs" />
     <Compile Include="Entity\HeroDetails.cs" />
     <Compile Include="Entity\Map.cs" />
     <Compile Include="Entity\Hero.cs" />
@@ -82,6 +104,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

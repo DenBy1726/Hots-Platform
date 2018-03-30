@@ -166,17 +166,17 @@ namespace Classifier
                     if (better.validPercent < current.validPercent)
                     {
                         better = current;
-                        SaveNetwork($"Best_{root}", validInput, validOutput, network, better);
+                        SaveNetwork($"Best_{root}", validInput, validOutput, network, better,root);
                     }
                     better.WriteTop();
 
                 } while (true);
-                SaveNetwork(root, trainInput, trainOutput, network, current);
+                SaveNetwork(root, trainInput, trainOutput, network, current,root);
             }
         }
 
         private static void SaveNetwork(string root, double[][] Input,
-            double[][] Output, ActivationNetwork network, LogInfo info)
+            double[][] Output, ActivationNetwork network, LogInfo info,string type)
         {
             double[] output = Input.Apply(network.Compute).GetColumn(0);
             double[] target = Output.Select(x => x[0]).ToArray();
@@ -185,11 +185,16 @@ namespace Classifier
                 Directory.CreateDirectory($"./Source/Network/{root}/Report");
             if (Directory.Exists($"./Source/Network/{root}/Report") == false)
                 Directory.CreateDirectory($"./Source/Network/{root}/Report");
-            File.WriteAllText($"./Source/Network/{root}/Network.json", JSONWebParser.Save(network));
+            File.WriteAllText($"./Source/Network/{root}/Network.json", MakeNetworkJSON(network, type));
             File.WriteAllText($"./Source/Network/{root}/Report/TrainingState.json", JSONWebParser.Save(info));
             File.WriteAllLines($"./Source/Network/{root}/Report/Output.csv",output.Select(x => x.ToString()));
             File.WriteAllLines($"./Source/Network/{root}/Report/Target.csv", target.Select(x => x.ToString()));
             File.WriteAllLines($"./Source/Network/{root}/Report/Error.csv", error.Select(x => x.ToString()));
+        }
+
+        private static string MakeNetworkJSON(ActivationNetwork network,string type)
+        {
+            return JSONWebParser.Save(new Tuple<ActivationNetwork,string>(network, type));
         }
     }
 }

@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace HoTS_Service.Service
 {
-    public abstract class IForecast
+    public interface IForecast
     {
-        [DllImport("forecast.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern double forecast(double[] input);
-        public abstract double Compute(double[] input);
+        double Compute(double[] input);
     }
 }

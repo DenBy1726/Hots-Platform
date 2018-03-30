@@ -36,8 +36,9 @@
     <Reference Include="Bunifu_UI_v1.4">
       <HintPath>..\..\..\..\..\Библиотека\Компоненты\Bunifu_UI_v1.4.dll</HintPath>
     </Reference>
-    <Reference Include="HoTS Service">
-      <HintPath>..\model\Release\HoTS Service.dll</HintPath>
+    <Reference Include="HoTS Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\model\bin\Debug\HoTS Service.dll</HintPath>
     </Reference>
     <Reference Include="LeftSideTabControl">
       <HintPath>..\..\..\..\..\Библиотека\Компоненты\DenByComponents\LeftSideTabControl\LeftSideTabControl\bin\Debug\LeftSideTabControl.dll</HintPath>
@@ -82,7 +83,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\HeroData.cs" />
     <Compile Include="Model\HeroList.cs" />
     <Compile Include="Model\Model.cs" />
     <Compile Include="Model\StatisticModule.cs" />

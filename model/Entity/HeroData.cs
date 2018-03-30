@@ -1,6 +1,6 @@
 ﻿using HoTS_Service.Entity;
 
-namespace HoTS_Forecaster_form
+namespace HoTS_Service.Entity
 {
 
     /// <summary>
@@ -10,6 +10,7 @@ namespace HoTS_Forecaster_form
     {
         Hero hero;
         HeroDetails details;
+        HeroClusters clusters;
         HeroStatisticItemAvg stat;
         int id;
 
@@ -18,10 +19,11 @@ namespace HoTS_Forecaster_form
 
         }
 
-        public HeroData(Hero hero,HeroDetails details,HeroStatisticItemAvg stat,int id)
+        public HeroData(Hero hero, HeroDetails details, HeroClusters clusters, HeroStatisticItemAvg stat, int id)
         {
             this.hero = hero;
             this.details = details;
+            this.Clusters = clusters;
             this.stat = stat;
             this.Id = id;
         }
@@ -30,7 +32,8 @@ namespace HoTS_Forecaster_form
         public HeroDetails Details { get => details; set => details = value; }
         public int Id { get => id; set => id = value; }
         public HeroStatisticItemAvg Statistic { get => stat; set => stat = value; }
+        public HeroClusters Clusters { get => clusters; set => clusters = value; }
     }
 
-    
+
 }

@@ -1,4 +1,5 @@
-﻿using HoTS_Service.Entity.Enum;
+﻿using HoTS_Service.Entity;
+using HoTS_Service.Entity.Enum;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

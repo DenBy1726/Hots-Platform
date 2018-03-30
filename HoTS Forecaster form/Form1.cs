@@ -71,12 +71,12 @@ namespace HoTS_Forecaster_form
 
             imageResource = new ImageResource(this.imageList1)
             {
-                Resource = "Source/Icons/"
+                Resource = "UI/Icons/"
             };
             imageResource.ImageSizeChange(Settings.Default.IconSize);
             largeImageResource = new ImageResource(this.imageList2)
             {
-                Resource = "Source/Images/"
+                Resource = "UI/Images/"
             };
             largeImageResource.Load(largeImageResource.Resource);
 
@@ -93,7 +93,7 @@ namespace HoTS_Forecaster_form
 
             forecastResultComponent = new ForecastResultComponent(textLabel, resultLabel, btn_forecast)
             {
-                Compute = Model.ForecastService.Compute,
+                Compute = Model.ForecastService.Select(x=>x).ToList(),
                 GetHeroes = () => Model.Hero,
                 GetPlayersPick = playerPick.GetPlayerPics,
                 MatchupWith = Model.Statistic.MatchUp.With,

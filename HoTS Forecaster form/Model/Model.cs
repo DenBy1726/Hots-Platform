@@ -21,28 +21,39 @@ namespace HoTS_Forecaster_form
 
         private HeroDetailsService detail = new HeroDetailsService();
 
+        private HeroClustersSevice clusters = new HeroClustersSevice();
+
         /// <summary>
         /// сервис для работы со статистикой
         /// </summary>
         public StatisticModule Statistic = new StatisticModule();
 
-        public NeuralNetworkForecast ForecastService = new NeuralNetworkForecast();
+
+
+        public List<NeuralNetworkForecast> ForecastService = new List<NeuralNetworkForecast>();
 
         /// <summary>
         /// данные о героях
         /// </summary>
-        public HeroList Hero { get => new HeroList(hero.All().ToList(),detail.All().ToList()
-            ,Statistic.HeroStatistic.All().Item1.ToList());}
+        public HeroList Hero { get => new HeroList(
+            hero.All().ToList(),
+            detail.All().ToList(),
+            clusters.All().ToList(),
+            Statistic.HeroStatistic.All().Item1.ToList());}
 
         public Model()
         {
-            Validate("./Source/Hero/Hero.json");
-            Validate("./Source/Hero/HeroDetails.json");
-            Validate("./Source/Map/Map.json");
+            Validate("./Data/Hero.json");
+            Validate("./Data/HeroDetails.json");
+            Validate("./Data/Map.json");
+            Validate("./Data/HeroClusters.json");
 
+            ForecastService = Directory.GetFiles("./Data/AI/")
+                .Select(name => new NeuralNetworkForecast().Load(name))
+                .ToList();
             try
             {
-                hero.Load("./Source/Hero/Hero.json");
+                hero.Load("./Data/Hero.json");
             }
             catch(Exception e)
             {
@@ -50,7 +61,7 @@ namespace HoTS_Forecaster_form
             }
             try
             {
-                Map.Load("./Source/Map/Map.json");
+                Map.Load("./Data/Map.json");
             }
             catch (Exception e)
             {
@@ -58,13 +69,21 @@ namespace HoTS_Forecaster_form
             }
             try
             {
-                detail.Load("./Source/Hero/HeroDetails.json");
+                detail.Load("./Data/HeroDetails.json");
             }
             catch (Exception e)
             {
                 ExceptionThrower.Throw(405,e, "HeroDetails.json");
             }
-            
+            try
+            {
+                clusters.Load("./Data/HeroClusters.json");
+            }
+            catch (Exception e)
+            {
+                ExceptionThrower.Throw(405, e, "HeroClusters.json");
+            }
+
         }
 
         /// <summary>

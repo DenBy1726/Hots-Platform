@@ -14,11 +14,11 @@ namespace HoTS_Forecaster_form
     {
         List<HeroData> items = new List<HeroData>();
 
-        public HeroList(List<Hero> items,List<HeroDetails> details,List<HeroStatisticItemAvg> stat)
+        public HeroList(List<Hero> items,List<HeroDetails> details,List<HeroClusters> clusters,List<HeroStatisticItemAvg> stat)
         {
             for(int i=0;i<items.Count;i++)
             {
-                this.items.Add(new HeroData(items[i], details[i], stat[i], i));
+                this.items.Add(new HeroData(items[i], details[i],clusters[i], stat[i], i));
             }
         }
 

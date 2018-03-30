@@ -1,5 +1,6 @@
 ﻿using Bunifu.Framework.UI;
 using HoTS_Service.Entity;
+using HoTS_Service.Service;
 using MetroFramework;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,13 @@ namespace HoTS_Forecaster_form.View
 
         private Func<List<int>> getPlayersPick;
         private Func<HeroList> getHeroes;
-        private Func<double[], double> compute;
+        private List<NeuralNetworkForecast> compute;
         private Func<int,int,double> matchupWith;
         private Func<int, int, double> matchupAgainst;
 
         public Func<List<int>> GetPlayersPick { get => getPlayersPick; set => getPlayersPick = value; }
         public Func<HeroList> GetHeroes { get => getHeroes; set => getHeroes = value; }
-        public Func<double[], double> Compute { get => compute; set => compute = value; }
+        public List<NeuralNetworkForecast> Compute { get => compute; set => compute = value; }
         public Func<int, int, double> MatchupWith { get => matchupWith; set => matchupWith = value; }
         public Func<int, int, double> MatchupAgainst { get => matchupAgainst; set => matchupAgainst = value; }
 
@@ -53,51 +54,27 @@ namespace HoTS_Forecaster_form.View
 
             int[] fTeam, sTeam;
 
+            HeroData[] heroes = GetHeroes().ToArray();
+
+            HeroData[] taken = heroes.Where(x => pics.Contains(x.Id)).ToArray();
+
+
             fTeam = pics.GetRange(0, 5).ToArray();
             sTeam = pics.GetRange(5, 5).ToArray();
 
-            double neuroOutput = 0, statOutput;
-
-            if (fTeam.SequenceEqual(sTeam))
+            Dictionary<string, double> result = new Dictionary<string, double>();
+            foreach (var func in Compute)
             {
-                neuroOutput = 0.5;
-                statOutput = 0.5;
-            }
-            else
-            {
-
-                double[] nnInput = new double[18];
-
-                var heroes = GetHeroes();
-
-                for (int i = 0; i < 5; i++)
+                if (fTeam.SequenceEqual(sTeam))
                 {
-                    nnInput[((int)heroes.Item[pics[i]].Hero.SubGroup) - 1]++;
+                    result.Add(func.Method, 0.5);
                 }
-
-                for (int i = 0; i < 5; i++)
+                else
                 {
-                    nnInput[((int)heroes.Item[pics[i + 5]].Hero.SubGroup) - 1 + 9]++;
+                    result.Add(func.Method, func.Compute(taken));
                 }
-
-                neuroOutput = Compute(nnInput);
-
-                double fSummator, sSummator;
-
-
-                fSummator = fTeam.SelectMany(x => fTeam, (x, y) => new Tuple<int, int>(x, y)).
-                    Sum(x => MatchupWith(x.Item1, x.Item2));
-
-                sSummator = sTeam.SelectMany(x => sTeam, (x, y) => new Tuple<int, int>(x, y)).
-                    Sum(x => MatchupAgainst(x.Item1, x.Item2));
-
-                statOutput = fSummator / (fSummator + sSummator);
             }
-
-
-
-            ShowResult(neuroOutput, statOutput);
-
+            ShowResult(result);
         }
 
         public void Hide()
@@ -124,15 +101,13 @@ namespace HoTS_Forecaster_form.View
             }
         }
 
-        public void ShowResult(params double[] result)
+        public void ShowResult(Dictionary<string, double> result)
         {
             Show();
-            double net = result[0];
-            double stat = result[1];
-            data[0].Text = (int)(net * 100) + " %";
-            data[1].Text = (int)(stat * 100) + " %";
+            data[0].Text = (int)(result["NNData"] * 100) + " %";
+            data[1].Text = (int)(result["NNDataGauss"] * 100) + " %";
 
-            data[2].Text = (int)((net + stat)/2 * 100) + " %";
+            data[2].Text = (int)((result["NNData"] + result["NNDataGauss"]) /2 * 100) + " %";
 
         }
         
