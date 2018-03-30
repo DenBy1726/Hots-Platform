@@ -37,7 +37,7 @@ namespace DBMaker
         {
             return $"CREATE TABLE IF NOT EXISTS {name} \n" +
                 $"(\n" +
-                $"id SERIAL UNIQUE PRIMARY KEY,\n" +
+                $"id BIGSERIAL UNIQUE PRIMARY KEY NOT NULL,\n" +
                 $"name  VARCHAR(100)\n" +
                 $");\n";
         }
@@ -76,7 +76,7 @@ namespace DBMaker
                 fieldData += $"{fieldName}";
                 if(fieldName == primaryKey.ToLower())
                 {
-                    fieldData += $" SERIAL UNIQUE PRIMARY KEY";
+                    fieldData += $" BIGSERIAL UNIQUE PRIMARY KEY NOT NULL";
                     keyUsed = true;
                 }
                 else
@@ -86,7 +86,7 @@ namespace DBMaker
                 fields.Add(fieldData);
             }
             if(keyUsed == false)
-                fields.Add($"{primaryKey}   SERIAL UNIQUE PRIMARY KEY");
+                fields.Add($"{primaryKey}   BIGSERIAL UNIQUE PRIMARY KEY NOT NULL");
             result += string.Join(",\n", fields);
             if (foreign != null)
             {
@@ -160,6 +160,8 @@ namespace DBMaker
                     return "VARCHAR(1000)";
                 if (type.Name == "Gaussian")
                     return "INT";
+                if (type.Name == "Json")
+                    return "JSONB";
             }
             if (type.BaseType == typeof(Array))
                 return "INT";
@@ -169,6 +171,8 @@ namespace DBMaker
                     return "date";
                 if (type.Name == "Int32")
                     return "INT";
+                if (type.Name == "Int64")
+                    return "BIGINT";
                 if (type.Name == "Boolean")
                     return "BOOLEAN";
                 if (type.Name == "Double")
@@ -190,6 +194,8 @@ namespace DBMaker
                     return $"\'{obj.ToString().Replace(@"'",@"''")}\'";
                 if (type.Name == "Gaussian")
                     return getId(type.FullName).ToString();
+                if (type.Name == "Json")
+                    return $"\'{((Json)obj).data.Replace(@"'", @"''")}\'";
             }
             if (type.BaseType == typeof(Array))
                 return getId(type.FullName).ToString();
@@ -202,6 +208,8 @@ namespace DBMaker
                 }
                    
                 if (type.Name == "Int32")
+                    return obj.ToString();
+                if (type.Name == "Int64")
                     return obj.ToString();
                 if (type.Name == "Boolean")
                     return obj.ToString().ToLower();

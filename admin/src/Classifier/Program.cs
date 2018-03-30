@@ -22,25 +22,23 @@ using static HoTS_Service.Util.Logger;
 
 namespace Classifier
 {
+    public struct LogInfo
+    {
+        public double error;
+        public int iteration;
+        public double validError;
+        public double percent;
+        public double validPercent;
+
+        public void WriteTop()
+        {
+            Console.Title = $"Best iteration: {iteration} " +
+                $"percent {Math.Round(validPercent * 100, 2)}%";
+        }
+    }
 
     class Program
     {
-        struct LogInfo
-        {
-            public double error;
-            public int iteration;
-            public double validError;
-            public double percent;
-            public double validPercent;
-
-            public void WriteTop()
-            {
-                Console.Title = $"Best iteration: {iteration} " +
-                    $"percent {Math.Round(validPercent * 100, 2)}%";
-            }
-
-        }
-
         static void Main(string[] args)
         {
             if (Directory.Exists("./Source/Network") == false)
