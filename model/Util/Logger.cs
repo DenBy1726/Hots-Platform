@@ -47,11 +47,26 @@ namespace HoTS_Service.Util
         {
 
             Color color = GetBlendedColor((int)(percent * 100));
+            string Er = ToField(error.ToString(),8);
+            string VEr = ToField(validError.ToString(), 8);
+            string It = ToField(iteration.ToString(), 4);
+            string P = ToField((percent*100).ToString(), 5);
+            string VP = ToField((validPercent * 100).ToString(), 5);
 
-            CConsole.WriteLine($"It = {iteration}" +
-                $" Er = {Math.Round(error,6)}" +
-                $" V.Er = {Math.Round(validError, 6)} P = {Math.Round(percent*100, 2)}%" +
-                $" V.P = {Math.Round(validPercent * 100, 2)}%", color);
+            CConsole.WriteLine($"It = {It}" +
+                $" Er = {Er}" +
+                $" V.Er = {VEr} P = {P}%" +
+                $" V.P = {VP}%", color);
+        }
+
+        private static string ToField(string text,int count)
+        {
+            if (text.Length > count)
+                return text.Substring(0, count);
+            else if (text.Length == count)
+                return text;
+            else
+                return text + new string(' ', count - text.Length);
         }
 
         public static void smalllog(int iteration, double error)

@@ -67,6 +67,7 @@
     <Compile Include="Entity\AIDto\Quartiles.cs" />
     <Compile Include="Entity\AIDto\RandGenerator.cs" />
     <Compile Include="Entity\AIDto\Support.cs" />
+    <Compile Include="Entity\AIDto\TrainMeta.cs" />
     <Compile Include="Entity\Enum\Difficulty.cs" />
     <Compile Include="Entity\Enum\Franchise.cs" />
     <Compile Include="Entity\Enum\GameMode.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Service\MatchupService.cs" />
     <Compile Include="Service\NeuralNetoworkForecast.cs" />
     <Compile Include="Service\StatisticService.cs" />
+    <Compile Include="Util\FindPath.cs" />
     <Compile Include="Util\Progress\AnimatedBar.cs" />
     <Compile Include="Util\Progress\ConsoleProgress.cs" />
     <Compile Include="Util\CSVBatchParser.cs" />

@@ -8,7 +8,7 @@ namespace HoTS_Service.Entity.AIDto
 {
     public class MetaNetwork
     {
-        public Network Item1 { get; set; }
-        public string Item2 { get; set; }
+        public Network Network { get; set; }
+        public TrainMeta Meta { get; set; }
     }
 }

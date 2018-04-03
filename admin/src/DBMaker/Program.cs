@@ -1,15 +1,18 @@
 ﻿using Classifier;
 using HoTS_Service.Entity;
+using HoTS_Service.Entity.AIDto;
 using HoTS_Service.Service;
 using HoTS_Service.Util;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 using System.Xml;
 using static HoTS_Service.Util.Logger;
 
@@ -41,7 +44,9 @@ namespace DBMaker
     {
         public long dataset_id;
         public long state_id;
+        public long meta_id;
         public Json data;
+        public bool isBest;
     }
 
     class Json
@@ -51,6 +56,17 @@ namespace DBMaker
         {
             this.data = data;
         }
+
+        public Json()
+        {
+
+        }
+    }
+
+    class NetworkTuple
+    {
+        public Json Network;
+        public TrainMeta Meta;
     }
 
     class Program
@@ -290,6 +306,9 @@ select setval('statisticheroesavg_id_seq', 0, false);";
             tables["trainingState"] = converter.CreateTable("TrainingState", typeof(LogInfo), "id", null);
             log("info", "TrainingState");
 
+            tables["trainMeta"] = converter.CreateTable("TrainingMeta", typeof(TrainMeta), "id", null);
+            log("info", "TrainingMeta");
+
             tables["network"] = converter.CreateTable("Network", typeof(Network)
                 , "id", new List<Foreign> {
                     new Foreign()
@@ -304,7 +323,14 @@ select setval('statisticheroesavg_id_seq', 0, false);";
                         Key = "state_id",
                         ForeignKey = "id"
                     },
+                     new Foreign()
+                    {
+                        DataTable = "TrainingMeta",
+                        Key = "meta_id",
+                        ForeignKey = "id"
+                    },
                 });
+
             log("info", "Network");
 
             log("info", "=========================================");
@@ -316,7 +342,7 @@ select setval('statisticheroesavg_id_seq', 0, false);";
                        .Where(t => t.IsEnum && t.Namespace == "HoTS_Service.Entity.Enum")
                        .Select(_enum => converter.InsertDictionary(_enum))
                        .ToArray();
-           
+
 
             data["heroesTable"] = converter.Insert("Hero", heroes.All());
             log("info", "Hero");
@@ -365,17 +391,30 @@ select setval('statisticheroesavg_id_seq', 0, false);";
             data["dataset"] = converter.Insert("Dataset", set);
             log("info", "Dataset");
 
-            string[] trainingStates = Directory
-                .GetFiles("./Source/Network", "*.json", SearchOption.AllDirectories)
+
+            string[] trainingStatesAll = Directory
+                .GetFiles("./Source/Network", "*.json", SearchOption.AllDirectories);
+
+            string[] trainingStates = trainingStatesAll
+                .Where(x => !x.Contains("Best") && x.Contains("\\Report\\"))
+                .ToArray();
+
+            string[] trainingStatesBest = trainingStatesAll
                 .Where(x => x.Contains("Best") && x.Contains("\\Report\\"))
                 .ToArray();
+
             long[] traingingStateIds = trainingStates
                 .Select(file => File.GetCreationTime(file).Ticks)
                 .ToArray();
 
+            long[] traingingStateIdsBest = trainingStatesBest
+                .Select(file => File.GetCreationTime(file).Ticks)
+                .ToArray();
+
+
             var trainigsStateData = trainingStates
                 .Select(x => File.ReadAllText(x))
-                .Select(json => (Dictionary<string, dynamic>)JSONWebParser.Load(json))
+                .Select(json => ((Dictionary<string, dynamic>)JSONWebParser.Load(json)))
                 .Select((obj, index) => new
                 {
                     id = traingingStateIds[index],
@@ -384,24 +423,89 @@ select setval('statisticheroesavg_id_seq', 0, false);";
                     percent = (double)obj["percent"],
                     validError = (double)obj["validError"],
                     validPercent = (double)obj["validPercent"]
-                });
+                })
+                .Concat(
+                    trainingStatesBest
+                    .Select(x => File.ReadAllText(x))
+                    .Select(json => ((Dictionary<string, dynamic>)JSONWebParser.Load(json)))
+                    .Select((obj, index) => new
+                    {
+                        id = traingingStateIdsBest[index],
+                        error = (double)obj["error"],
+                        iteration = (int)obj["iteration"],
+                        percent = (double)obj["percent"],
+                        validError = (double)obj["validError"],
+                        validPercent = (double)obj["validPercent"]
+                    }));
 
             data["trainingState"] = converter.Insert("TrainingState", trainigsStateData);
             log("info", "TrainingState");
 
-            string[] networks = Directory
+            string[] networksAll = Directory
                 .GetFiles("./Source/Network", "*.json", SearchOption.AllDirectories)
+                .ToArray();
+
+            string[] networks = networksAll
+                .Where(x => !x.Contains("Best") && !x.Contains("\\Report\\"))
+                .ToArray();
+
+            string[] networksBest = networksAll
                 .Where(x => x.Contains("Best") && !x.Contains("\\Report\\"))
                 .ToArray();
 
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            var networksMeta = networks
+                .Select(x => File.ReadAllText(x))
+                .Select(json => serializer.Deserialize<NetworkTuple>(json).Meta)
+                .Select((obj, index) => new
+                {
+                    Alias = obj.Alias,
+                    ClusterPath = obj.ClusterPath,
+                    Name = obj.Name,
+                    Description = obj.Description,
+                    Id = traingingStateIds[index]
+                }
+                )
+                .Concat(
+                    networksBest
+                    .Select(x => File.ReadAllText(x))
+                    .Select(json => serializer.Deserialize<NetworkTuple>(json).Meta)
+                    .Select((obj, index) => new
+                    {
+                        Alias = obj.Alias,
+                        ClusterPath = obj.ClusterPath,
+                        Name = obj.Name,
+                        Description = obj.Description,
+                        Id = traingingStateIdsBest[index]
+                    }));
+
+            data["trainingMeta"] = converter.Insert("TrainingMeta", networksMeta);
+            log("info", "TrainingMeta");
 
             var networksData = networks
+                .Select(x => File.ReadAllText(x))
+                .Select(json => serializer.Deserialize<NetworkTuple>(json).Network)
                 .Select((x, index) => new Network()
                 {
                     dataset_id = set.id,
                     data = new Json(File.ReadAllText(networks[index])),
-                    state_id = traingingStateIds[index]
-                });
+                    state_id = traingingStateIds[index],
+                    meta_id = traingingStateIds[index],
+                    isBest = false
+                })
+                .Concat(
+                    networksBest
+                    .Select(x => File.ReadAllText(x))
+                    .Select(json => serializer.Deserialize<NetworkTuple>(json).Network)
+                    .Select((x, index) => new Network()
+                    {
+                        dataset_id = set.id,
+                        data = new Json(File.ReadAllText(networks[index])),
+                        state_id = traingingStateIds[index],
+                        meta_id = traingingStateIds[index],
+                        isBest = false
+                    }));
 
             data["network"] = converter.Insert("Network", networksData);
             log("info", "Network");
@@ -469,11 +573,11 @@ select setval('statisticheroesavg_id_seq', 0, false);";
             log("debug", "Архивирование датасета");
 
             DateTime date = File.GetCreationTime("./Dataset/Data/Hero.json");
-            string fileName = "dataset_{ date.ToFileTime()}.rar";
+            string fileName = $"dataset_{date.ToFileTime()}.rar";
             File.Delete( $"./Archive/dataset_{date.ToFileTime()}.rar");
             ZipFile.CreateFromDirectory("./Dataset/", $"./Archive/dataset_{date.ToFileTime()}.rar",CompressionLevel.Optimal,false);
             Directory.Delete($"./Dataset/",true);
-            return new Dataset() { date = date, fileName = fileName, id = date.Ticks};
+            return new Dataset() { date = date, fileName = fileName, id = date.ToFileTime() };
         }
 
         static string StatisticSchema()

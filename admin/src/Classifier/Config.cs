@@ -1,4 +1,5 @@
-﻿using HoTS_Service.Util;
+﻿using HoTS_Service.Entity.AIDto;
+using HoTS_Service.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +19,7 @@ namespace Classifier
         CancelationConfig cancelation = new CancelationConfig();
         ValidationConfig validation = new ValidationConfig();
         FilterConfig filter = new FilterConfig();
+        List<TrainMeta> meta = new List<TrainMeta> { };
         bool moreInfoLog = true;
 
         [DataMember]
@@ -32,6 +34,8 @@ namespace Classifier
         public FilterConfig Filter { get => filter; set => filter = value; }
         [DataMember]
         public bool MoreInfoLog { get => moreInfoLog; set => moreInfoLog = value; }
+        [DataMember]
+        public List<TrainMeta> Meta { get => meta; set => meta = value; }
 
         public Config() { }
         public Config(string file)
@@ -43,6 +47,7 @@ namespace Classifier
             validation = json.Validation;
             filter = json.Filter;
             MoreInfoLog = json.MoreInfoLog;
+            Meta = json.Meta;
         }
         public override string ToString()
         {
@@ -160,4 +165,6 @@ namespace Classifier
             return HoTS_Service.Util.ToString.ReflexString(this);
         }
     }
+
+   
 }

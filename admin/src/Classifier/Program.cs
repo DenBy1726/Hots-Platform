@@ -19,6 +19,7 @@ using Accord.Neuro.Learning;
 using Accord.Statistics.Kernels;
 using static HoTS_Service.Util.NNLoger;
 using static HoTS_Service.Util.Logger;
+using HoTS_Service.Entity.AIDto;
 
 namespace Classifier
 {
@@ -39,12 +40,13 @@ namespace Classifier
 
     class Program
     {
+        public static Config cfg;
         static void Main(string[] args)
         {
             if (Directory.Exists("./Source/Network") == false)
                 Directory.CreateDirectory("./Source/Network");
-            
-            Config cfg = new Config("Classifier.config");
+
+            cfg = new Config("Classifier.config");
 
             log("info", "Конфиг:" + cfg.ToString());
             //File.WriteAllText("Classifier.config", JSonParser.Save(cfg, typeof(Config)));
@@ -135,7 +137,7 @@ namespace Classifier
                         answers =
                             trainInput.Apply(network.Compute).GetColumn(0).
                             Apply(x => x > 0.5 ? 1 : 0);
-                        
+
                         outputs = trainOutput.Apply(x => x[0] > 0.5 ? 1 : 0);
 
                         pos = 0;
@@ -166,17 +168,18 @@ namespace Classifier
                     if (better.validPercent < current.validPercent)
                     {
                         better = current;
-                        SaveNetwork($"Best_{root}", validInput, validOutput, network, better,root);
+                        SaveNetwork($"Best_{root}", validInput,
+                            validOutput, network, better, root);
                     }
                     better.WriteTop();
 
                 } while (true);
-                SaveNetwork(root, trainInput, trainOutput, network, current,root);
+                SaveNetwork(root, trainInput, trainOutput, network, current, root);
             }
         }
 
         private static void SaveNetwork(string root, double[][] Input,
-            double[][] Output, ActivationNetwork network, LogInfo info,string type)
+            double[][] Output, ActivationNetwork network, LogInfo info, string type)
         {
             double[] output = Input.Apply(network.Compute).GetColumn(0);
             double[] target = Output.Select(x => x[0]).ToArray();
@@ -187,14 +190,25 @@ namespace Classifier
                 Directory.CreateDirectory($"./Source/Network/{root}/Report");
             File.WriteAllText($"./Source/Network/{root}/Network.json", MakeNetworkJSON(network, type));
             File.WriteAllText($"./Source/Network/{root}/Report/TrainingState.json", JSONWebParser.Save(info));
-            File.WriteAllLines($"./Source/Network/{root}/Report/Output.csv",output.Select(x => x.ToString()));
+            File.WriteAllLines($"./Source/Network/{root}/Report/Output.csv", output.Select(x => x.ToString()));
             File.WriteAllLines($"./Source/Network/{root}/Report/Target.csv", target.Select(x => x.ToString()));
             File.WriteAllLines($"./Source/Network/{root}/Report/Error.csv", error.Select(x => x.ToString()));
         }
 
-        private static string MakeNetworkJSON(ActivationNetwork network,string type)
+        private static string MakeNetworkJSON(ActivationNetwork network, string type)
         {
-            return JSONWebParser.Save(new Tuple<ActivationNetwork,string>(network, type));
+            TrainMeta curMeta;
+            if (cfg.Meta == null)
+                curMeta = new TrainMeta() { Name = type };
+            else
+            {
+                var found = cfg.Meta.ToList().Find(x => x.Name == type);
+                if (found == null)
+                    curMeta = new TrainMeta() { Name = type };
+                else
+                    curMeta = found;
+            }
+            return JSONWebParser.Save(new { Network = network, Meta = curMeta });
         }
     }
 }

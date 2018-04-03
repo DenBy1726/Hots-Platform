@@ -20,11 +20,9 @@ namespace HoTS_Service.Service
     {
         Accord.Neuro.ActivationNetwork network;
 
-        string method = "";
-
         Func<HeroData, int> clusterFunction;
 
-        public string Method { get => method; set => method = value; }
+        public TrainMeta Meta { get; set; }
         public Func<HeroData, int> ClusterFunction { get => clusterFunction; set => clusterFunction = value; }
 
         public double Compute(double[] input)
@@ -40,9 +38,9 @@ namespace HoTS_Service.Service
             {
                 input[clusters[i]]++;
             }
-            for (int i = 0; i < 5; i++)
+            for (int i = 5; i < 10; i++)
             {
-                input[2*clusters[i + 5]]++;
+                input[(input.Length / 2) + clusters[i]]++;
             }
             return Compute(input);
         }
@@ -51,23 +49,28 @@ namespace HoTS_Service.Service
         {
             JavaScriptSerializer js = new JavaScriptSerializer();
             var metaNetwork =  js.Deserialize<MetaNetwork>(File.ReadAllText(file));
-            network = metaNetwork.Item1;
-            Method = metaNetwork.Item2;
+            network = metaNetwork.Network;
+            Meta = metaNetwork.Meta;
 
-            switch (Method)
+            ClusterFunction = (x) =>
             {
-                case "NNData":
-                    ClusterFunction = (x) => (int)x.Clusters.SubGroupCluster;
-                    break;
-
-                case "NNDataGauss":
-                    ClusterFunction = (x) => (int)x.Clusters.Cluster;
-                    break;
-
-                default:
-                    ClusterFunction = (x) => (int)x.Hero.SubGroup;
-                    break;
-            }
+                try
+                {
+                    return FindPath.GetDeepPropertyValue<int>(x, Meta.ClusterPath);
+                }
+                catch
+                {
+                    try
+                    {
+                        return FindPath.GetDeepPropertyValue<int>(x, "Hero.SubGroup")-1;
+                    }
+                    catch
+                    {
+                        throw new ArgumentException("Объект героя должен по крайней мере" +
+                            "содержать кластер по умолчанию");
+                    }
+                }
+            };
 
             return this;
         }

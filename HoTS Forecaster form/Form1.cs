@@ -52,20 +52,13 @@ namespace HoTS_Forecaster_form
         private List<MetroCheckBox> subgroupStatCheckBox;
 
         private List<BunifuFlatButton> playerpickButton;
-        private List<BunifuCustomLabel> textLabel;
-        private List<BunifuCustomLabel> resultLabel;
         private List<Control> controls = new List<Control>();
         private List<ToolStripItem> menu = new List<ToolStripItem>();
         
-
-
-
-
         public Form1()
         {
             Model = new Model();
             InitializeComponent();
-
 
             Groups();
 
@@ -91,7 +84,7 @@ namespace HoTS_Forecaster_form
                 GetHeroId = (x) => Model.Hero.Select(x).Item[0].Id
             };
 
-            forecastResultComponent = new ForecastResultComponent(textLabel, resultLabel, btn_forecast)
+            forecastResultComponent = new ForecastResultComponent(metroListView1, btn_forecast)
             {
                 Compute = Model.ForecastService.Select(x=>x).ToList(),
                 GetHeroes = () => Model.Hero,
@@ -249,16 +242,6 @@ namespace HoTS_Forecaster_form
                 bunifuFlatButton1,bunifuFlatButton2,bunifuFlatButton3,bunifuFlatButton4,
                 bunifuFlatButton5,bunifuFlatButton6,bunifuFlatButton7,bunifuFlatButton8,
                 bunifuFlatButton9,bunifuFlatButton10
-            };
-
-            textLabel = new List<BunifuCustomLabel>()
-            {
-                bunifuCustomLabel1,bunifuCustomLabel2,bunifuCustomLabel3,bunifuCustomLabel6
-            };
-
-            resultLabel = new List<BunifuCustomLabel>()
-            {
-                bunifuCustomLabel4,bunifuCustomLabel5,bunifuCustomLabel7
             };
 
             GetControls(this.Controls, controls);

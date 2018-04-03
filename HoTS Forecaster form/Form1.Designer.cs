@@ -34,12 +34,6 @@
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("");
             System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
-            "1",
-            "4",
-            "5"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("2");
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("3");
             this.metroTabControl1 = new MetroFramework.Controls.MetroTabControl();
             this.metroTabPage4 = new MetroFramework.Controls.MetroTabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -154,6 +148,9 @@
             this.bunifuFlatButton1 = new Bunifu.Framework.UI.BunifuFlatButton();
             this.metroLabel48 = new MetroFramework.Controls.MetroLabel();
             this.bunifuCustomLabel1 = new Bunifu.Framework.UI.BunifuCustomLabel();
+            this.metroListView1 = new MetroFramework.Controls.MetroListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cont_Filter = new System.Windows.Forms.SplitContainer();
             this.btn_FilterVisibleChange = new Bunifu.Framework.UI.BunifuTileButton();
             this.metroLabel47 = new MetroFramework.Controls.MetroLabel();
@@ -257,9 +254,6 @@
             this.metroStyleManager1 = new MetroFramework.Components.MetroStyleManager(this.components);
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.htmlToolTip1 = new MetroFramework.Drawing.Html.HtmlToolTip();
-            this.metroListView1 = new MetroFramework.Controls.MetroListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.metroTabControl1.SuspendLayout();
             this.metroTabPage4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -2263,6 +2257,41 @@
             this.bunifuCustomLabel1.Text = "Вероятность победы:";
             this.bunifuCustomLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // metroListView1
+            // 
+            this.metroListView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.metroListView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.metroListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.tableLayoutPanel7.SetColumnSpan(this.metroListView1, 3);
+            this.metroListView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.metroListView1.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.metroListView1.ForeColor = System.Drawing.SystemColors.Info;
+            this.metroListView1.FullRowSelect = true;
+            this.metroListView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.metroListView1.LabelEdit = true;
+            this.metroListView1.Location = new System.Drawing.Point(278, 38);
+            this.metroListView1.Name = "metroListView1";
+            this.metroListView1.OwnerDraw = true;
+            this.tableLayoutPanel7.SetRowSpan(this.metroListView1, 4);
+            this.metroListView1.Scrollable = false;
+            this.metroListView1.Size = new System.Drawing.Size(251, 134);
+            this.metroListView1.Style = MetroFramework.MetroColorStyle.Purple;
+            this.metroListView1.TabIndex = 63;
+            this.metroListView1.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroListView1.UseCompatibleStateImageBehavior = false;
+            this.metroListView1.UseSelectable = true;
+            this.metroListView1.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Width = 110;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Width = 162;
+            // 
             // cont_Filter
             // 
             this.cont_Filter.BackColor = System.Drawing.Color.Black;
@@ -3995,37 +4024,6 @@
             // htmlToolTip1
             // 
             this.htmlToolTip1.OwnerDraw = true;
-            // 
-            // metroListView1
-            // 
-            this.metroListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.tableLayoutPanel7.SetColumnSpan(this.metroListView1, 3);
-            this.metroListView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.metroListView1.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.metroListView1.FullRowSelect = true;
-            this.metroListView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5,
-            listViewItem6,
-            listViewItem7});
-            this.metroListView1.Location = new System.Drawing.Point(278, 38);
-            this.metroListView1.Name = "metroListView1";
-            this.metroListView1.OwnerDraw = true;
-            this.tableLayoutPanel7.SetRowSpan(this.metroListView1, 4);
-            this.metroListView1.Size = new System.Drawing.Size(251, 134);
-            this.metroListView1.TabIndex = 63;
-            this.metroListView1.UseCompatibleStateImageBehavior = false;
-            this.metroListView1.UseSelectable = true;
-            this.metroListView1.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Width = 110;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Width = 162;
             // 
             // Form1
             // 
