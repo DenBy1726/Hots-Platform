@@ -504,7 +504,7 @@ select setval('statisticheroesavg_id_seq', 0, false);";
                     .Select((x, index) => new Network()
                     {
                         dataset_id = set.id,
-                        data = new Json(File.ReadAllText(networks[index])),
+                        data = new Json(File.ReadAllText(networksBest[index])),
                         state_id = traingingStateIdsBest[index],
                         meta_id = traingingStateIdsBest[index],
                         isBest = true,
