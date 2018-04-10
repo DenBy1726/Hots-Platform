@@ -45,8 +45,10 @@ namespace DBMaker
         public long dataset_id;
         public long state_id;
         public long meta_id;
+        public long id;
         public Json data;
         public bool isBest;
+
     }
 
     class Json
@@ -492,7 +494,8 @@ select setval('statisticheroesavg_id_seq', 0, false);";
                     data = new Json(File.ReadAllText(networks[index])),
                     state_id = traingingStateIds[index],
                     meta_id = traingingStateIds[index],
-                    isBest = false
+                    isBest = false,
+                    id = traingingStateIds[index]
                 })
                 .Concat(
                     networksBest
@@ -502,9 +505,10 @@ select setval('statisticheroesavg_id_seq', 0, false);";
                     {
                         dataset_id = set.id,
                         data = new Json(File.ReadAllText(networks[index])),
-                        state_id = traingingStateIds[index],
-                        meta_id = traingingStateIds[index],
-                        isBest = false
+                        state_id = traingingStateIdsBest[index],
+                        meta_id = traingingStateIdsBest[index],
+                        isBest = true,
+                        id = traingingStateIdsBest[index]
                     }));
 
             data["network"] = converter.Insert("Network", networksData);
