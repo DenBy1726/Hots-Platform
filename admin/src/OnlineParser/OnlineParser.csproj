@@ -38,7 +38,7 @@
     </Reference>
     <Reference Include="HoTS Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\model\bin\Debug\HoTS Service.dll</HintPath>
+      <HintPath>..\..\..\model\Release\HoTS Service.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

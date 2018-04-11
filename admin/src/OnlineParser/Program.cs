@@ -15,6 +15,7 @@ using HoTS_Service.Util;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using static HoTS_Service.Util.Logger;
+using System.Text.RegularExpressions;
 
 namespace OnlineParser
 {
@@ -29,7 +30,12 @@ namespace OnlineParser
 
             public static string GetImageSelector()
             {
-                return ".infobox2 > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(1) > a:nth-child(1) > img:nth-child(1)";
+                return "#pi-tab-0 > figure:nth-child(1) > a:nth-child(1) > img:nth-child(1)";
+            }
+
+            public static string GetModelSelector()
+            {
+                return "#pi-tab-1 > figure:nth-child(1) > a:nth-child(1) > img:nth-child(1)";
             }
 
             public static string GetIconSelector()
@@ -46,12 +52,12 @@ namespace OnlineParser
         const bool USE_HERO_DETAILS = true;
         const bool USE_HERO_ICONS = true;
 
-
         static HeroService Heroes = new HeroService();
         const String HeroTemplateURL = "https://heroesofthestorm.gamepedia.com/Data:";
         const String IconsURL = "https://heroesofthestorm.gamepedia.com/Heroes_of_the_Storm_Wiki";
-        const String ImageTemplateURL = "https://heroesofthestorm.gamepedia.com/";
+        const String ImageTemplateURL = "http://heroesofthestorm.wikia.com/wiki/";
         static HeroDetails[] Details;
+        static HeroWebExtension[] WebExtension;
 
         static AnimatedBar ABar = new AnimatedBar();
 
@@ -61,6 +67,12 @@ namespace OnlineParser
 
         static void Main(string[] args)
         {
+            ServicePointManager.SecurityProtocol =
+                SecurityProtocolType.Ssl3 | 
+                SecurityProtocolType.Tls | 
+                SecurityProtocolType.Tls11 | 
+                SecurityProtocolType.Tls12;
+
             string HTML ="";
 
             if (!Directory.Exists("Cache"))
@@ -71,6 +83,8 @@ namespace OnlineParser
                 Directory.CreateDirectory("./Source/Icons");
             if (!Directory.Exists("./Source/Hero"))
                 Directory.CreateDirectory("./Source/Hero");
+            if (!Directory.Exists("./Source/Portrait"))
+                Directory.CreateDirectory("./Source/Portrait");
 
             log("debug", "WEB Парсер запущен");
             if (!File.Exists("./Source/Hero/Hero.json"))
@@ -79,6 +93,8 @@ namespace OnlineParser
             if (USE_HERO_DETAILS)
             {
                 Details = new HeroDetails[Heroes.Count()];
+                WebExtension = new HeroWebExtension[Heroes.Count()];
+
                 log("succes", "Схема героев успешно загружена");
                 log("debug", "Парсинг деталей героев");
 
@@ -98,7 +114,9 @@ namespace OnlineParser
 
                     log("debug", "Парсинг " + Hero.Name + " начат");
                     Details[i] = ParseDetails(HTML);
-                    Details[i].DetailsUrl = path;
+
+                    WebExtension[i] = new HeroWebExtension(i);
+                    WebExtension[i].DetailsUrl = path;
 
                     log("info", Details[i].ToString());
                     log("succes", "Парсинг " + Hero.Name + " завершен");
@@ -138,6 +156,7 @@ namespace OnlineParser
 
                 log("debug", $"Парсинг {Hero.Name}_Large");
                 ParseImages(HTML,Hero.Name);
+                ParseModel(HTML, Hero.Name);
                 log("succes", $"Парсинг {Hero.Name}_Large завершен");
             }
 
@@ -146,11 +165,12 @@ namespace OnlineParser
             log("succes", "Парсинг деталей героев завершен");
 
             var outputDetails = JSonParser.Save(Details, typeof(HeroDetails[]));
+            var outputExtensions = JSonParser.Save(WebExtension, typeof(HeroWebExtension[]));
             File.WriteAllText("./Source/Hero/HeroDetails.json", outputDetails);
+            File.WriteAllText("./Source/Hero/HeroWebExtension.json", outputExtensions);
 
 
         }
-
 
         public static void Caching(string url,string resource)
         {
@@ -164,9 +184,9 @@ namespace OnlineParser
             }
         }
 
-        public static void Download(Hero Hero)
+        public static void Caching(Hero Hero)
         {
-            Download(HeroTemplateURL + Hero.Name, $"./Cache/{Hero.Name}.html");
+            Caching(HeroTemplateURL + Hero.Name, $"./Cache/{Hero.Name}.html");
         }
 
         public static void Download(string url,string adress)
@@ -230,14 +250,14 @@ namespace OnlineParser
                 if (Heroes.Find(temp).Name == "Greymane")
                 {
                     Hero GreyCustom = new Hero(-1, "Greymane_(Human)", 0, 0);
-                    Download(GreyCustom);
+                    Caching(GreyCustom);
                     string HTMLCustom = File.ReadAllText($"./Cache/{GreyCustom.Name}.html", Encoding.Default);
                     cq = CQ.Create(HTMLCustom);
                 }
                 if (Heroes.Find(temp).Name == "D.Va")
                 {
                     Hero GreyCustom = new Hero(-1, "D.Va_(Pilot)", 0, 0);
-                    Download(GreyCustom);
+                    Caching(GreyCustom);
                     string HTMLCustom = File.ReadAllText($"./Cache/{GreyCustom.Name}.html", Encoding.Default);
                     cq = CQ.Create(HTMLCustom);
                 }
@@ -302,18 +322,19 @@ namespace OnlineParser
 
                 var element = iconData.FirstChild.FirstChild;
                 var alt = element.Attributes["alt"];
-                var src = element.Attributes["src"];
+                var srcset = element.Attributes["srcset"].Split(' ');
+                var src = srcset[srcset.Length - 2];
 
                 var finder = Heroes.Where(x => x.Name == alt);
                 if (finder.Count > 0)
                 {
-                    Details[finder[0].Id].IconUrl = src;
+                    WebExtension[finder[0].Id].IconUrl = src;
                 }
 
 
                 Caching(src, $"./Source/Icons/{alt}.png");
 
-                Bitmap img = new Bitmap(new Bitmap($"./Source/Icons/{alt}.png"), new Size(40, 40));
+                Bitmap img = new Bitmap(new Bitmap($"./Source/Icons/{alt}.png"), new Size(60, 60));
                 
 
                 Bitmap imgWithFrame = new Bitmap(img);
@@ -327,10 +348,10 @@ namespace OnlineParser
 
                 Image corner = OvalImage(img,Color.Transparent);
 
-                Bitmap rez = new Bitmap(50, 50);
+                Bitmap rez = new Bitmap(70, 70);
                 using (Graphics g = Graphics.FromImage(rez))
                 {
-                    g.DrawImage(corner, new Rectangle(5, 5, 40, 40), new Rectangle(0, 0, 40, 40), GraphicsUnit.Pixel);
+                    g.DrawImage(corner, new Rectangle(5, 5, 60, 60), new Rectangle(0, 0, 60, 60), GraphicsUnit.Pixel);
                 }
 
                 rez.Save($"./Source/Icons/{alt}_corner.png");
@@ -358,15 +379,28 @@ namespace OnlineParser
             CQ cq = CQ.Create(HTML);
             var cq2 = cq.Find(Selectors.GetImageSelector());
             var src = cq2[0].Attributes["src"];
-
             var finder = Heroes.Where(x => x.Name == heroName);
             if (finder.Count > 0)
             {
-                Details[finder[0].Id].ImageUrl = src;
+                WebExtension[finder[0].Id].ImageUrl = src;
             }
 
             Caching(src, $"./Source/Images/{heroName}.png");
 
+        }
+
+        private static void ParseModel(string HTML, string heroName)
+        {
+            CQ cq = CQ.Create(HTML);
+            var cq2 = cq.Find(Selectors.GetModelSelector());
+            var src = cq2[0].Attributes["src"];
+            var finder = Heroes.Where(x => x.Name == heroName);
+            if (finder.Count > 0)
+            {
+                WebExtension[finder[0].Id].PortraitUrl = src;
+            }
+
+            Caching(src, $"./Source/Portrait/{heroName}.png");
         }
 
     }

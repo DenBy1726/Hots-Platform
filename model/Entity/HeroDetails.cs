@@ -48,16 +48,6 @@ namespace HoTS_Service.Entity
         [DataMember]
         public int AttackDamage;
 
-        [DataMember]
-        public string ImageUrl;
-
-        [DataMember]
-        public string IconUrl;
-
-        [DataMember]
-        public string DetailsUrl;
-
-
         public int Id { get => id;}
         public string Title { get => title; set => title = value; }
 

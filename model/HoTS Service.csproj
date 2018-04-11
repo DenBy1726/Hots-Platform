@@ -83,6 +83,7 @@
     <Compile Include="Entity\ReplaySchema.cs" />
     <Compile Include="Entity\Statistic.cs" />
     <Compile Include="Entity\StormObject.cs" />
+    <Compile Include="Entity\HeroWebExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\HeroClustersService.cs" />
     <Compile Include="Service\HeroDetailsService.cs" />

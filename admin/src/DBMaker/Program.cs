@@ -97,6 +97,12 @@ namespace DBMaker
             clusters.Load("./Source/Hero/HeroClusters.json");
             log("succes", "HeroClusters.json Загружен");
 
+           
+            log("debug", "Загрузка HeroWebExtension.json");
+            HeroWebExtension[] webExtension = (HeroWebExtension[])
+               JSonParser.Load(File.ReadAllText("./Source/Hero/HeroWebExtension.json"), typeof(HeroWebExtension[]));
+            log("succes", "HeroWebExtension.json Загружен");
+
             MapService maps = new MapService();
             log("debug", "Загрузка Map.json");
             maps.Load("./Source/Map/Map.json");
@@ -212,6 +218,18 @@ select setval('statisticheroesavg_id_seq', 0, false);";
                     }
                 });
             log("info", "HeroDetails");
+
+            tables["heroWebExtension"] = converter.CreateTable("HeroWebExtension", typeof(HeroWebExtension),"id",
+                new List<Foreign> {
+                    new Foreign()
+                    {
+                        DataTable = "Hero",
+                        Key = "id",
+                        ForeignKey = "id"
+                    }
+                });
+
+            log("info", "HeroWebExtension");
 
             tables["mapTable"] = converter.CreateTable("Map", typeof(Map), "id", null);
             log("info", "Map");
@@ -351,6 +369,9 @@ select setval('statisticheroesavg_id_seq', 0, false);";
 
             data["detailsTable"] = converter.Insert("HeroDetails", details.All());
             log("info", "HeroDetails");
+
+            data["heroWebExtension"] = converter.Insert("HeroWebExtension", webExtension);
+            log("info", "HeroWebExtension");
 
             data["mapTable"] = converter.Insert("Map", maps.All());
             log("info", "Map");
@@ -534,21 +555,22 @@ select setval('statisticheroesavg_id_seq', 0, false);";
             Directory.CreateDirectory("./Dataset/UI/Images");
             Directory.CreateDirectory("./Dataset/UI/Icons");
             Directory.CreateDirectory("./Archive/");
-            string[] jsonFiles = Directory
-                .GetFiles("./Source/", "*.json",SearchOption.AllDirectories)
-                .Where(x=>!x.EndsWith("_temp.json") && !x.Contains("Network"))
-                .ToArray();
 
             log("debug", "Исключение временных файлов");
+            string[] jsonFiles = Directory
+                .GetFiles("./Source/", "*.json",SearchOption.AllDirectories)
+                .Where(x=>!x.EndsWith("_temp.json") && !x.Contains("Network") && !x.Contains("Web"))
+                .ToArray();
 
+
+            log("debug", "Исключение отчетов обучения моделей");
             string[] networkFiles = Directory
                 .GetFiles("./Source/Network", "*.json", SearchOption.AllDirectories)
                 .Where(x=>x.Contains("Best") && !x.Contains("\\Report\\"))
                 .ToArray();
 
-            log("debug", "Исключение отчетов обучения моделей");
+            
             log("debug", "Выборка лучших моделей");
-
             string[] icons = Directory
                 .GetFiles("./Source/Icons", "*.png");
             string[] images = Directory
