@@ -20,7 +20,6 @@ namespace Parser.Service
     /// </summary>
     public class AutoParser : CLIParser<object>
     {
-
         ///класс для хранения путей к входным файлам
         public class InputFileParam
         {
@@ -31,7 +30,6 @@ namespace Parser.Service
                 inputFolder = input;
                 Validate();
             }
-
             public string InputFolder { get => inputFolder; }
 
             void Validate()
@@ -74,7 +72,6 @@ namespace Parser.Service
                     return Name.Length;
                 }
             }
-
             public string[] Path { get => path; set => path = value; }
             public string[] Name { get => name; set => name = value; }
 
@@ -88,14 +85,12 @@ namespace Parser.Service
             /// <returns></returns>
             public static string CheckFileExist(string folder, string name)
             {
-
                 if (Directory.GetFiles(folder, name).Length == 0)
                 {
                     log("Error", "");
                     throw new FileNotFoundException($"Не найден файл {name} по пути {folder} .");
                 }
                 return folder;
-
             }
         }
 
@@ -119,7 +114,6 @@ namespace Parser.Service
                         Directory.CreateDirectory(OutputFolder + Path[i]);
                         log("debug", $"Выходной каталог { OutputFolder + Path[i]} найден");
                     }
-
                 }
             }
 
@@ -175,7 +169,6 @@ namespace Parser.Service
                     return Name.Length;
                 }
             }
-
             public string[] Path { get => path; set => path = value; }
             public string[] Name { get => name; set => name = value; }
             public string OutputFolder { get => outputFolder; set => outputFolder = value; }
@@ -208,9 +201,11 @@ namespace Parser.Service
                 object data;
 
                 int i = 0;
+
                 while ((data = ReadData()) != null)
                 {
                     Hero h = ParseData(data);
+
                     if (h == null)
                     {
                         log("debug", $"Строка {i + 1}");
@@ -228,10 +223,8 @@ namespace Parser.Service
                 log("succes", "Сохранение данных о героях завершено");
             }
 
-
             public override void Validate()
             {
-
             }
 
             protected override void OpenSource(string path)
@@ -244,6 +237,7 @@ namespace Parser.Service
             protected override Hero ParseData(object obj)
             {
                 string[] data = obj as string[];
+
                 if (data == null)
                     return null;
                 if (data.Length != 4 && data.Length != 2)
@@ -265,8 +259,8 @@ namespace Parser.Service
                 }
                 else
                 {
-
                     bool parse = Enum.TryParse(data[2], true, out group);
+
                     if (parse == false || (int)group >= GroupCount)
                     {
                         log("warng", $"Неизвестная группа героя {data[2]}");
@@ -307,7 +301,6 @@ namespace Parser.Service
                 Output = output;
             }
 
-
             public void Run()
             {
                 OpenSource(Input);
@@ -317,6 +310,7 @@ namespace Parser.Service
                 while ((data = ReadData()) != null)
                 {
                     Map h = ParseData(data);
+
                     if (h == null)
                         continue;
                     Map.Add(h);
@@ -330,7 +324,6 @@ namespace Parser.Service
 
             public override void Validate()
             {
-
             }
 
             protected override void OpenSource(string path)
@@ -343,6 +336,7 @@ namespace Parser.Service
             protected override Map ParseData(object obj)
             {
                 string[] data = obj as string[];
+
                 if (data == null)
                     return null;
                 if (data.Length != 2 && data.Length != 4)
@@ -352,11 +346,13 @@ namespace Parser.Service
                 }
 
                 int id = Int32.Parse(data[0]);
+
                 if (id > 1000)
                 {
                     log("warng", $"Приведение абсолютного ИД к относительному {id} -> {id % 1000}");
                     id = id % 1000;
                 }
+
                 string name = data[1];
 
                 Map temp = new Map(id, name);
@@ -388,7 +384,6 @@ namespace Parser.Service
             public HeroStatisticItemMin[] MinStat;
             public HeroStatisticItemMax[] MaxStat;
 
-
             public ReplaySchemaParser(string inputSchema, string inputData,
                 string extension, string output, string statisticOutput, string statisticHeroOutput,
                 int batchCount = 10000)
@@ -417,7 +412,6 @@ namespace Parser.Service
                 Stat = new Statistic[1000];
             }
 
-
             public void Run()
             {
                 //очищаем выходной файл если он уже существовал
@@ -430,6 +424,7 @@ namespace Parser.Service
 
                 OpenSource(InputSchema);
                 OpenBatchSource(InputData, Extension);
+
                 AnimatedBar bar = new AnimatedBar();
 
                 for (int j = 0; j < Stat.Length; j++)
@@ -455,6 +450,7 @@ namespace Parser.Service
                 while ((data = ReadData()) != null)
                 {
                     var r = ParseData(data);
+
                     if (r == null)
                     {
                         log("debug", $"Строка {i + 1}");
@@ -469,6 +465,7 @@ namespace Parser.Service
                     do
                     {
                         data = ReadBatchData();
+
                         var replay = ParseReplayData(data);
 
                         if (replay == null)
@@ -535,8 +532,6 @@ namespace Parser.Service
                             bar.Step(parsed);
                         }
 
-
-
                         if (batch.Count == BatchCount)
                         {
                             Save(Output, batch, typeof(List<Match>));
@@ -544,7 +539,6 @@ namespace Parser.Service
                         }
                     }
                     i++;
-
                 }
                 //если остались не сохраненные данные
                 if (batch.Count > 0)
@@ -572,6 +566,7 @@ namespace Parser.Service
                 Match m = new Match();
                 int m_teamCount = 0;
                 int e_teamCount = 0;
+
                 try
                 {
                     foreach (var it in data)
@@ -602,6 +597,7 @@ namespace Parser.Service
                 Match m = new Match();
                 int m_teamCount = 0;
                 int e_teamCount = 0;
+
                 try
                 {
                     foreach (var it in data)
@@ -624,7 +620,6 @@ namespace Parser.Service
 
             public override void Validate()
             {
-
             }
 
             protected override void OpenSource(string path)
@@ -645,6 +640,7 @@ namespace Parser.Service
             protected override ReplaySchema ParseData(object obj)
             {
                 string[] data = obj as string[];
+
                 if (data == null)
                     return null;
                 if (data.Length != 5)
@@ -652,13 +648,16 @@ namespace Parser.Service
                     log("warng", "Неверный формат строки схемы повторов");
                     return null;
                 }
+
                 ReplaySchema sch = new ReplaySchema();
+
                 try
                 {
                     sch.id = Int32.Parse(data[0]);
                     sch.mapId = Int32.Parse(data[2]);
                     if (sch.mapId > 1000)
                         sch.mapId = sch.mapId % 1000;
+
                     var dt = DateTime.Parse(data[3]);
                     sch.length = dt.Second + dt.Minute * 60;
                     bool parse = Enum.TryParse(data[1], out sch.gameMode);
@@ -676,12 +675,12 @@ namespace Parser.Service
                     log("warng", "Неверный формат строки схемы повтора");
                     return null;
                 }
-
             }
 
             protected HeroStatisticItem ParseReplayData(object obj)
             {
                 string[] data = obj as string[];
+
                 if (data == null)
                     return null;
                 if (data.Length != 20)
@@ -689,7 +688,9 @@ namespace Parser.Service
                     log("warng", "Неверный формат строки повторов");
                     return null;
                 }
+
                 HeroStatisticItem stat = new HeroStatisticItem();
+
                 try
                 {
                     stat.replayId = Int32.Parse(data[0]);
@@ -751,18 +752,20 @@ namespace Parser.Service
 
                 for (int i = 0; i < maxStat.Length; i++)
                 {
-                    maxStat[i] = new HeroStatisticItemMax();
-                    maxStat[i].assistPerSec = Double.MinValue;
-                    maxStat[i].campTakenPerSec = Double.MinValue;
-                    maxStat[i].damageTakenPerSec = Double.MinValue;
-                    maxStat[i].deathPerSec = Double.MinValue;
-                    maxStat[i].dps = Double.MinValue;
-                    maxStat[i].expPerSec = Double.MinValue;
-                    maxStat[i].hps = Double.MinValue;
-                    maxStat[i].killPerSec = Double.MinValue;
-                    maxStat[i].sdps = Double.MinValue;
-                    maxStat[i].sec = Double.MinValue;
-                    maxStat[i].winrate = 0;
+                    maxStat[i] = new HeroStatisticItemMax()
+                    {
+                        assistPerSec = Double.MinValue,
+                        campTakenPerSec = Double.MinValue,
+                        damageTakenPerSec = Double.MinValue,
+                        deathPerSec = Double.MinValue,
+                        dps = Double.MinValue,
+                        expPerSec = Double.MinValue,
+                        hps = Double.MinValue,
+                        killPerSec = Double.MinValue,
+                        sdps = Double.MinValue,
+                        sec = Double.MinValue,
+                        winrate = 0
+                    };
                 }
             }
 
@@ -806,7 +809,6 @@ namespace Parser.Service
                 avgStat[id].winrate += r.winrate;
 
                 avgStat[id].count++;
-
             }
 
             private void ComputeAverage(HeroStatisticItemAvg[] avgStat)
@@ -839,7 +841,6 @@ namespace Parser.Service
                     avgStat[i].specialistRating = ComputeSpecValue(avgStat[i], minStat, maxStat);
                     avgStat[i].supportRating = ComputeSupportValue(avgStat[i], minStat, maxStat);
                 }
-
             }
 
             /// <summary>
@@ -864,7 +865,6 @@ namespace Parser.Service
                     minStat.sec = Double.MaxValue;
                     minStat.winrate = 0;
                 }
-
 
                 {
                     maxStat.assistPerSec = Double.MinValue;
@@ -908,9 +908,7 @@ namespace Parser.Service
                 }
 
                 return new Tuple<HeroStatisticItemMin, HeroStatisticItemMax>(minStat, maxStat);
-
             }
-
 
             private double ComputeAssasinValue(HeroStatisticItemAvg avg, HeroStatisticItemMin min, HeroStatisticItemMax max)
             {
@@ -958,11 +956,11 @@ namespace Parser.Service
                 return v1 > v2 ? v1 : v2;
             }
 
-
             protected override void Save(string name, object obj, Type t)
             {
                 List<Match> m = obj as List<Match>;
                 int ind = 0;
+
                 using (var f = File.Open(name, FileMode.Append))
                 {
                     using (var file = new StreamWriter(f))
@@ -970,6 +968,7 @@ namespace Parser.Service
                         foreach (var it in m)
                         {
                             StringBuilder oneItem = new StringBuilder("");
+
                             for (int i = 0; i < 5; i++)
                             {
                                 oneItem.Append(it.YourTeam[i]);
@@ -987,7 +986,6 @@ namespace Parser.Service
                         }
                     }
                 }
-
             }
         }
 
@@ -1013,8 +1011,6 @@ namespace Parser.Service
                 HeroStatisticOutput = heroStatisticOutput;
                 MapStatisticOutput = mapStatisticOutput;
             }
-
-
 
             public void Run()
             {
@@ -1092,6 +1088,7 @@ namespace Parser.Service
             {
                 int len = tempRSStat.Count;
                 List<int> unused = new List<int>();
+
                 for (int i = 0; i < len; i++)
                 {
                     if (tempRSStat[i].Statictic.Ammount == 0)
@@ -1133,6 +1130,7 @@ namespace Parser.Service
             {
                 int len = avg.Count;
                 List<int> unused = new List<int>();
+
                 for (int i = 0; i < len; i++)
                 {
                     if (avg[i].count == 0)
@@ -1209,7 +1207,6 @@ namespace Parser.Service
                 private int count;
                 private int[] cluster;
                 private int[] subgroup;
-
                 public int Count { get => count; set => count = value; }
                 public int[] Cluster { get => cluster; set => cluster = value; }
                 public int[] Subgroup { get => subgroup; set => subgroup = value; }
@@ -1290,7 +1287,7 @@ namespace Parser.Service
                         Where(x => x.Cluster == g.Cluster && x.SubGroup == g.SubGroup).Count()
                     }).Distinct().ToArray();
 
-                log("success", "Большие результатирующие класстера рассчитаны");
+                log("succes", "Большие результатирующие класстера рассчитаны");
                 //результат: те соответсвия, которые имеют достаточное количество элементов
                 var endClusters = uniqueMatch
                     .Where(x => x.Count > inputs.Length / uniqueMatch.Length)
@@ -1301,7 +1298,7 @@ namespace Parser.Service
                         Subgroup = new int[] { y.SubGroup }
                     }).ToList();
 
-                log("success", "Малые результатирующие класстера рассчитаны");
+                log("succes", "Малые результатирующие класстера рассчитаны");
                 //все что не попало
                 var littleClusters = uniqueMatch
                   .Where(x => x.Count <= inputs.Length / uniqueMatch.Length)
@@ -1330,6 +1327,7 @@ namespace Parser.Service
                     int sum = 0;
                     List<int> clusters2 = new List<int>();
                     List<int> subgroups = new List<int>();
+
                     foreach (var it in group)
                     {
                         sum += it.Count;
@@ -1344,7 +1342,7 @@ namespace Parser.Service
                     };
                 }).ToArray();
 
-                log("success", "Процесс объединения малых кластеров завершен");
+                log("succes", "Процесс объединения малых кластеров завершен");
 
                 endClusters.AddRange(resolved);
 
@@ -1367,10 +1365,9 @@ namespace Parser.Service
                     };
                 }).ToArray();
 
-                log("success", "Расчет кластеров для героев завершен");
+                log("succes", "Расчет кластеров для героев завершен");
 
                 Save(ClusterOutput, ClustersMapper, typeof(HeroClusters[]));
-
             }
 
             public override void Validate()
@@ -1399,7 +1396,6 @@ namespace Parser.Service
                 File.WriteAllText(name, json);
             }
 
-
         }
 
         public class ModelParser : CLIParser<Match>
@@ -1413,7 +1409,7 @@ namespace Parser.Service
 
             private KeyValuePair<int, int>[,] winAgainst = new KeyValuePair<int, int>
                [HParser.Hero.Count, HParser.Hero.Count];
-        
+
             public ModelParser(string Input, string Output, string MatchUpOutput)
             {
                 this.Input = Input;
@@ -1439,6 +1435,7 @@ namespace Parser.Service
             public void Run()
             {
                 OpenSource(Input);
+
                 object data = null;
                 MatchupTable = new MatchupTable(HParser.Hero.Count);
                 Dictionary<string, Tuple<short, short>> HashTable = new Dictionary
@@ -1486,7 +1483,6 @@ namespace Parser.Service
                                ((short)(curItem.Item1 + (short)match.ProbabilityToWin), (short)(curItem.Item2 + 1));
                         }
 
-
                         i++;
                         if (i % 100000 == 0)
                         {
@@ -1500,7 +1496,6 @@ namespace Parser.Service
                 //все данные расчитаны
                 Save(Output, HashTable, HashTable.GetType());
                 File.WriteAllText(MatchUpOutput, JSonParser.Save(MatchupTable, typeof(MatchupTable)));
-
             }
 
             private void UpdateMatchupTable(Match m)
@@ -1513,12 +1508,12 @@ namespace Parser.Service
                         int h2 = m.YourTeam[j];
                         int played = winWith[h1, h2].Value + 1;
                         int win = winWith[h1, h2].Key;
+
                         if (i != j && m.ProbabilityToWin == 1)
                         {
                             win++;
                         }
                         winWith[h1, h2] = new KeyValuePair<int, int>(win, played);
-
                     }
                 }
 
@@ -1530,12 +1525,12 @@ namespace Parser.Service
                         int h2 = m.EnemyTeam[j];
                         int played = winWith[h1, h2].Value + 1;
                         int win = winWith[h1, h2].Key;
+
                         if (i != j && m.ProbabilityToWin == 0)
                         {
                             win++;
                         }
                         winWith[h1, h2] = new KeyValuePair<int, int>(win, played);
-
                     }
                 }
 
@@ -1548,6 +1543,7 @@ namespace Parser.Service
 
                         int played = winAgainst[h1, h2].Value + 1;
                         int win = winAgainst[h1, h2].Key;
+
                         if (m.ProbabilityToWin == 1)
                             win++;
                         winAgainst[h1, h2] = new KeyValuePair<int, int>(win, played);
@@ -1563,12 +1559,12 @@ namespace Parser.Service
 
                         int played = winAgainst[h1, h2].Value + 1;
                         int win = winAgainst[h1, h2].Key;
+
                         if (m.ProbabilityToWin == 0)
                             win++;
                         winAgainst[h1, h2] = new KeyValuePair<int, int>(win, played);
                     }
                 }
-
             }
 
             private void ComputeMatchupTable()
@@ -1600,6 +1596,7 @@ namespace Parser.Service
             protected override Match ParseData(object obj)
             {
                 var data = obj as string[];
+
                 if (data == null)
                     return null;
                 if (data.Length != 12)
@@ -1607,7 +1604,9 @@ namespace Parser.Service
                     log("warng", "Неверный формат строки схемы повторов");
                     return null;
                 }
+
                 Match m = new Match();
+
                 try
                 {
                     //индексация в считанных данных и модели отличается,
@@ -1619,7 +1618,6 @@ namespace Parser.Service
                         m.EnemyTeam[i] = DParser.HeroMapper[Int32.Parse(data[i + 5])];
                     m.Map = DParser.MapMapper[Int32.Parse(data[10])];
                     m.ProbabilityToWin = Double.Parse(data[11]);
-
                 }
                 catch
                 {
@@ -1629,7 +1627,6 @@ namespace Parser.Service
                 return m;
             }
 
-
             protected override object ReadData()
             {
                 return CSVParser.Next();
@@ -1638,6 +1635,7 @@ namespace Parser.Service
             protected override void Save(string name, object obj, Type t)
             {
                 Dictionary<string, Tuple<short, short>> arr = obj as Dictionary<string, Tuple<short, short>>;
+
                 using (var file = CSVParser.Save(name))
                 {
                     foreach (var it in arr)
@@ -1664,8 +1662,8 @@ namespace Parser.Service
 
             public void Run()
             {
-                
                 OpenSource(Input);
+
                 object data = null;
                 Dictionary<string, Tuple<short, short>> HashTable = new Dictionary
                     <string, Tuple<short, short>>();
@@ -1697,7 +1695,6 @@ namespace Parser.Service
                            ((short)(curItem.Item1 + (short)resultPart), (short)(curItem.Item2 + 1));
                     }
 
-
                     i++;
                     if (i % 100000 == 0)
                     {
@@ -1709,13 +1706,13 @@ namespace Parser.Service
                 Console.WriteLine();
                 //все данные расчитаны
                 Save(Output, HashTable, HashTable.GetType());
-
             }
 
-            private Tuple<int[],double> ClusteringMatch(Match match)
+            private Tuple<int[], double> ClusteringMatch(Match match)
             {
                 int[] data = new int[ClusterCount * 2];
-                for(int i = 0; i < match.YourTeam.Length; i++)
+
+                for (int i = 0; i < match.YourTeam.Length; i++)
                 {
                     int cluster = Cluster[match.YourTeam[i]].Cluster;
                     data[cluster]++;
@@ -1727,7 +1724,7 @@ namespace Parser.Service
                     data[cluster]++;
                 }
 
-                return new Tuple<int[], double>(data,match.ProbabilityToWin);
+                return new Tuple<int[], double>(data, match.ProbabilityToWin);
             }
 
             public override void Validate()
@@ -1745,6 +1742,7 @@ namespace Parser.Service
             protected override Match ParseData(object obj)
             {
                 var data = obj as string[];
+
                 if (data == null)
                     return null;
                 if (data.Length != 12)
@@ -1752,7 +1750,9 @@ namespace Parser.Service
                     log("warng", "Неверный формат строки схемы повторов");
                     return null;
                 }
+
                 Match m = new Match();
+
                 try
                 {
                     //индексация в считанных данных и модели отличается,
@@ -1764,7 +1764,6 @@ namespace Parser.Service
                         m.EnemyTeam[i] = DParser.HeroMapper[Int32.Parse(data[i + 5])];
                     m.Map = DParser.MapMapper[Int32.Parse(data[10])];
                     m.ProbabilityToWin = Double.Parse(data[11]);
-
                 }
                 catch
                 {
@@ -1774,7 +1773,6 @@ namespace Parser.Service
                 return m;
             }
 
-
             protected override object ReadData()
             {
                 return CSVParser.Next();
@@ -1783,6 +1781,7 @@ namespace Parser.Service
             protected override void Save(string name, object obj, Type t)
             {
                 Dictionary<string, Tuple<short, short>> arr = obj as Dictionary<string, Tuple<short, short>>;
+
                 using (var file = CSVParser.Save(name))
                 {
                     foreach (var it in arr)
@@ -1806,7 +1805,6 @@ namespace Parser.Service
         public static Clustering CParser;
         public static ModelParser MDParser;
         public static GaussianClusteringModelParser GCParser;
-
 
         public override void Run(string[] args)
         {
@@ -1865,7 +1863,6 @@ namespace Parser.Service
                 json = System.IO.File.ReadAllText(Output[3]);
                 RSParser.Stat = (Statistic[])JSonParser.Load(json, typeof(Statistic[]));
                 log("succes", "Загрузка статистики зввершена");
-
             }
 
             //удаляем пустые записи
@@ -1901,7 +1898,6 @@ namespace Parser.Service
             GCParser.Run();
             log("succes", "Формирование кластеризованных данных для модели завершено");
 
-
         }
 
         private bool ExistAll(params string[] files)
@@ -1928,6 +1924,7 @@ namespace Parser.Service
             log("succes", $"Входные файлы найдены");
 
             string outPath = "";
+
             if (NamedParam.ContainsKey("o") == false)
             {
                 log("warng", $"Выходные каталог не задан, применяется значение по умолчанию");
@@ -1950,14 +1947,10 @@ namespace Parser.Service
             {
                 KeysParam.useOlderData = true;
             }
-
         }
-
-
 
         protected override void OpenSource(string path)
         {
-            
         }
 
         protected override object ParseData(object data)
@@ -1972,13 +1965,8 @@ namespace Parser.Service
 
         protected override void Save(string name, object obj, Type t)
         {
-           
         }
 
-       
-
-
-      
     }
- 
+
 }

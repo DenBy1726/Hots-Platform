@@ -56,7 +56,11 @@ namespace HoTS_Service.Service
             {
                 try
                 {
-                    return FindPath.GetDeepPropertyValue<int>(x, Meta.ClusterPath);
+                    int value = FindPath.GetDeepPropertyValue<int>(x, Meta.ClusterPath);
+                    if (Meta.ClusterPath.Contains("SubGroup"))
+                        return value - 1;
+                    else
+                        return value;
                 }
                 catch
                 {
